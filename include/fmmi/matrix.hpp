@@ -1,6 +1,7 @@
 #ifndef FMMI_MATRIX_HPP
 #define FMMI_MATRIX_HPP
 
+#include <algorithm>
 #include <cstdint>
 
 namespace fmmi
@@ -22,6 +23,15 @@ public:
     inline
     double& operator()(uint16_t rowIdx, uint16_t columnIdx);
 
+    /// Matrix equality.
+    /// Note that this implementation does not allow any 'epsilon' difference
+    /// between elements.
+    inline
+    bool operator==(const matrix<height, width>& mx) const;
+
+    inline
+    bool operator!=(const matrix<height, width>& mx) const;
+
 private:
     double data_[width * height];
 };
@@ -40,6 +50,22 @@ inline
 double& matrix<height, width>::operator()(uint16_t rowIdx, uint16_t columnIdx)
 {
     return data_[rowIdx * width + columnIdx];
+}
+
+
+template <uint16_t height, uint16_t width>
+inline
+bool matrix<height, width>::operator==(const matrix<height, width>& mx) const
+{
+    return std::equal(std::begin(data_), std::end(data_), std::begin(mx.data_));
+}
+
+
+template <uint16_t height, uint16_t width>
+inline
+bool matrix<height, width>::operator!=(const matrix<height, width>& mx) const
+{
+    return !(*this == mx);
 }
 
 

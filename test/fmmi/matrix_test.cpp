@@ -37,6 +37,30 @@ TEST_CASE("matrix::matrix()")
 }
 
 
+TEST_CASE("matrix::operator==()")
+{
+    matrix<2, 3> mx1{
+        1.0, 2.0, 3.0,
+        4.0, 5.0, 6.0,
+    };
+
+    matrix<2, 3> mx2{
+        1.0, 2.0, 3.0,
+        5.0, 6.0, 7.0,
+    };
+
+    CHECK_EQ(mx1, mx1);
+
+    CHECK_NE(mx1, mx2);
+
+    mx2(1, 0) = 4.0;
+    mx2(1, 1) = 5.0;
+    mx2(1, 2) = 6.0;
+
+    CHECK_EQ(mx1, mx2);
+}
+
+
 TEST_CASE("add()")
 {
     matrix<2, 3> mx1{
