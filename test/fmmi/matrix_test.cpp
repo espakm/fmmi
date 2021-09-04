@@ -2,21 +2,85 @@
 
 #include "fmmi/matrix.hpp"
 
-TEST_CASE("matrix test")
+using namespace fmmi;
+
+TEST_CASE("matrix::matrix()")
 {
-    matrix<4, 4> mx{
+    matrix<5, 4> mx{
         1.0, 2.0, 3.0, 4.0,
         5.0, 6.0, 7.0, 8.0,
         9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0,
+        17.0, 18.0, 19.0, 20.0,
     };
 
     CHECK_EQ(mx(0, 0), 1.0);
-    CHECK_EQ(mx(0, 1), 5.0);
-    CHECK_EQ(mx(0, 2), 9.0);
-    CHECK_EQ(mx(0, 3), 13.0);
-    CHECK_EQ(mx(1, 0), 2.0);
+    CHECK_EQ(mx(0, 1), 2.0);
+    CHECK_EQ(mx(0, 2), 3.0);
+    CHECK_EQ(mx(0, 3), 4.0);
+    CHECK_EQ(mx(1, 0), 5.0);
     CHECK_EQ(mx(1, 1), 6.0);
-    CHECK_EQ(mx(1, 2), 10.0);
-    CHECK_EQ(mx(1, 3), 14.0);
+    CHECK_EQ(mx(1, 2), 7.0);
+    CHECK_EQ(mx(1, 3), 8.0);
+    CHECK_EQ(mx(2, 0), 9.0);
+    CHECK_EQ(mx(2, 1), 10.0);
+    CHECK_EQ(mx(2, 2), 11.0);
+    CHECK_EQ(mx(2, 3), 12.0);
+    CHECK_EQ(mx(3, 0), 13.0);
+    CHECK_EQ(mx(3, 1), 14.0);
+    CHECK_EQ(mx(3, 2), 15.0);
+    CHECK_EQ(mx(3, 3), 16.0);
+    CHECK_EQ(mx(4, 0), 17.0);
+    CHECK_EQ(mx(4, 1), 18.0);
+    CHECK_EQ(mx(4, 2), 19.0);
+    CHECK_EQ(mx(4, 3), 20.0);
+}
+
+
+TEST_CASE("add()")
+{
+    matrix<2, 3> mx1{
+        1.0, 2.0, 3.0,
+        4.0, 5.0, 6.0,
+    };
+
+    matrix<2, 3> mx2{
+        10.0, 11.0, 12.0,
+        20.0, 21.0, 22.0,
+    };
+
+    matrix<2, 3> mx3;
+
+    add(mx1, mx2, mx3);
+
+    CHECK_EQ(mx3(0, 0), 11.0);
+    CHECK_EQ(mx3(0, 1), 13.0);
+    CHECK_EQ(mx3(0, 2), 15.0);
+    CHECK_EQ(mx3(1, 0), 24.0);
+    CHECK_EQ(mx3(1, 1), 26.0);
+    CHECK_EQ(mx3(1, 2), 28.0);
+}
+
+
+TEST_CASE("mul()")
+{
+    matrix<2, 3> mx1{
+        1.0, 2.0, 3.0,
+        4.0, 5.0, 6.0,
+    };
+
+    matrix<3, 2> mx2{
+        10.0, 11.0,
+        20.0, 21.0,
+        30.0, 31.0,
+    };
+
+    matrix<2, 2> mx3;
+
+    mul(mx1, mx2, mx3);
+
+    CHECK_EQ(mx3(0, 0), 140.0);
+    CHECK_EQ(mx3(0, 1), 146.0);
+    CHECK_EQ(mx3(1, 0), 320.0);
+    CHECK_EQ(mx3(1, 1), 335.0);
 }

@@ -2,7 +2,7 @@
 
 int main()
 {
-    hello();
+    fmmi::hello();
 
     return 0;
 }

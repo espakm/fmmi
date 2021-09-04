@@ -2,7 +2,12 @@
 
 #include <iostream>
 
+namespace fmmi
+{
+
 void hello()
 {
     std::cout << "Hello, World!" << std::endl;
+}
+
 }

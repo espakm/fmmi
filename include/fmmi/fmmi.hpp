@@ -3,6 +3,11 @@
 
 #include "fmmi/matrix.hpp"
 
+namespace fmmi
+{
+
 void hello();
+
+}
 
 #endif
