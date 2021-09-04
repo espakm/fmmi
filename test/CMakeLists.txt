@@ -7,3 +7,4 @@ set(TEST_SOURCES
 )
 
 add_executable(doctest ${TEST_SOURCES})
+target_link_libraries(doctest fmmi)
