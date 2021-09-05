@@ -108,3 +108,47 @@ TEST_CASE("mul()")
     CHECK_EQ(mx3(1, 0), 320.0);
     CHECK_EQ(mx3(1, 1), 335.0);
 }
+
+
+TEST_CASE("matrix::partition()")
+{
+    matrix<5, 4> mx{
+        1.0, 2.0, 3.0, 4.0,
+        5.0, 6.0, 7.0, 8.0,
+        9.0, 10.0, 11.0, 12.0,
+        13.0, 14.0, 15.0, 16.0,
+        17.0, 18.0, 19.0, 20.0,
+    };
+
+    matrix<2, 3> mx11{
+        1.0, 2.0, 3.0,
+        5.0, 6.0, 7.0,
+    };
+
+    matrix<2, 1> mx12{
+        4.0,
+        8.0,
+    };
+
+    matrix<3, 1> mx21{
+        9.0,
+        13.0,
+        17.0,
+    };
+
+    matrix<3, 3> mx22{
+        10.0, 11.0, 12.0,
+        14.0, 15.0, 16.0,
+        18.0, 19.0, 20.0,
+    };
+
+    auto part11 = mx.partition<0, 0, 2, 3>();
+    auto part12 = mx.partition<0, 3, 2, 1>();
+    auto part21 = mx.partition<2, 0, 3, 1>();
+    auto part22 = mx.partition<2, 1, 3, 3>();
+
+    CHECK_EQ(part11, mx11);
+    CHECK_EQ(part12, mx12);
+    CHECK_EQ(part21, mx21);
+    CHECK_EQ(part22, mx22);
+}
