@@ -152,3 +152,131 @@ TEST_CASE("matrix::partition()")
     CHECK_EQ(part21, mx21);
     CHECK_EQ(part22, mx22);
 }
+
+
+TEST_CASE("matrix partition addition")
+{
+    matrix<4, 6> mx1{
+        1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+        7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
+        13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
+        19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
+    };
+
+    auto mx1_part11 = mx1.partition<0, 0, 2, 3>();
+    auto mx1_part12 = mx1.partition<0, 3, 2, 3>();
+    auto mx1_part21 = mx1.partition<2, 0, 2, 3>();
+    auto mx1_part22 = mx1.partition<2, 3, 2, 3>();
+
+    matrix<4, 6> mx2{
+        -1.0, -2.0, -3.0, -4.0, -5.0, -6.0,
+        -7.0, -8.0, -9.0, -10.0, -11.0, -12.0,
+        -13.0, -14.0, -15.0, -16.0, -17.0, -18.0,
+        -19.0, -20.0, -21.0, -22.0, -23.0, -24.0,
+    };
+
+    auto mx2_part11 = mx2.partition<0, 0, 2, 3>();
+    auto mx2_part12 = mx2.partition<0, 3, 2, 3>();
+    auto mx2_part21 = mx2.partition<2, 0, 2, 3>();
+    auto mx2_part22 = mx2.partition<2, 3, 2, 3>();
+
+    matrix<4, 6> mx3;
+
+    auto mx3_part11 = mx3.partition<0, 0, 2, 3>();
+    auto mx3_part12 = mx3.partition<0, 3, 2, 3>();
+    auto mx3_part21 = mx3.partition<2, 0, 2, 3>();
+    auto mx3_part22 = mx3.partition<2, 3, 2, 3>();
+
+    add(mx1, mx2, mx3);
+
+    matrix<4, 6> mx4;
+
+    auto mx4_part11 = mx4.partition<0, 0, 2, 3>();
+    auto mx4_part12 = mx4.partition<0, 3, 2, 3>();
+    auto mx4_part21 = mx4.partition<2, 0, 2, 3>();
+    auto mx4_part22 = mx4.partition<2, 3, 2, 3>();
+
+    add(mx1_part11, mx2_part11, mx4_part11);
+    add(mx1_part12, mx2_part12, mx4_part12);
+    add(mx1_part21, mx2_part21, mx4_part21);
+    add(mx1_part22, mx2_part22, mx4_part22);
+
+    CHECK_EQ(mx3_part11, mx4_part11);
+    CHECK_EQ(mx3_part12, mx4_part12);
+    CHECK_EQ(mx3_part21, mx4_part21);
+    CHECK_EQ(mx3_part22, mx4_part22);
+
+    CHECK_EQ(mx3, mx4);
+}
+
+
+TEST_CASE("matrix partition multiplication")
+{
+    matrix<4, 6> mx1{
+        1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+        7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
+        13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
+        19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
+    };
+
+    auto mx1_part11 = mx1.partition<0, 0, 2, 3>();
+    auto mx1_part12 = mx1.partition<0, 3, 2, 3>();
+    auto mx1_part21 = mx1.partition<2, 0, 2, 3>();
+    auto mx1_part22 = mx1.partition<2, 3, 2, 3>();
+
+    matrix<6, 4> mx2{
+        -1.0, -2.0, -3.0, -4.0,
+        -5.0, -6.0, -7.0, -8.0,
+        -9.0, -10.0, -11.0, -12.0,
+        -13.0, -14.0, -15.0, -16.0,
+        -17.0, -18.0, -19.0, -20.0,
+        -21.0, -22.0, -23.0, -24.0,
+    };
+
+    auto mx2_part11 = mx2.partition<0, 0, 3, 2>();
+    auto mx2_part12 = mx2.partition<0, 2, 3, 2>();
+    auto mx2_part21 = mx2.partition<3, 0, 3, 2>();
+    auto mx2_part22 = mx2.partition<3, 2, 3, 2>();
+
+    matrix<4, 4> mx3;
+
+    auto mx3_part11 = mx3.partition<0, 0, 2, 2>();
+    auto mx3_part12 = mx3.partition<0, 2, 2, 2>();
+    auto mx3_part21 = mx3.partition<2, 0, 2, 2>();
+    auto mx3_part22 = mx3.partition<2, 2, 2, 2>();
+
+    mul(mx1, mx2, mx3);
+
+    matrix<4, 4> mx4;
+
+    auto mx4_part11 = mx4.partition<0, 0, 2, 2>();
+    auto mx4_part12 = mx4.partition<0, 2, 2, 2>();
+    auto mx4_part21 = mx4.partition<2, 0, 2, 2>();
+    auto mx4_part22 = mx4.partition<2, 2, 2, 2>();
+
+    matrix<2, 2> mx_tmp1;
+    matrix<2, 2> mx_tmp2;
+
+    mul(mx1_part11, mx2_part11, mx_tmp1);
+    mul(mx1_part12, mx2_part21, mx_tmp2);
+    add(mx_tmp1, mx_tmp2, mx4_part11);
+
+    mul(mx1_part11, mx2_part12, mx_tmp1);
+    mul(mx1_part12, mx2_part22, mx_tmp2);
+    add(mx_tmp1, mx_tmp2, mx4_part12);
+
+    mul(mx1_part21, mx2_part11, mx_tmp1);
+    mul(mx1_part22, mx2_part21, mx_tmp2);
+    add(mx_tmp1, mx_tmp2, mx4_part21);
+
+    mul(mx1_part21, mx2_part12, mx_tmp1);
+    mul(mx1_part22, mx2_part22, mx_tmp2);
+    add(mx_tmp1, mx_tmp2, mx4_part22);
+
+    CHECK_EQ(mx3_part11, mx4_part11);
+    CHECK_EQ(mx3_part12, mx4_part12);
+    CHECK_EQ(mx3_part21, mx4_part21);
+    CHECK_EQ(mx3_part22, mx4_part22);
+
+    CHECK_EQ(mx3, mx4);
+}

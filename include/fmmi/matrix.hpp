@@ -114,8 +114,8 @@ const matrix<p_height, p_width, stride, double*> matrix<height, width, stride, D
 }
 
 
-template <uint16_t m, uint16_t n>
-void add(const matrix<m, n>& mx1, const matrix<m, n>& mx2, matrix<m, n>& mx3)
+template <uint16_t m, uint16_t n, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+void add(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& mx2, matrix<m, n, stride3, D3>& mx3)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -127,8 +127,8 @@ void add(const matrix<m, n>& mx1, const matrix<m, n>& mx2, matrix<m, n>& mx3)
 }
 
 
-template <uint16_t m, uint16_t n, uint16_t p>
-void mul(const matrix<m, n>& mx1, const matrix<n, p>& mx2, matrix<m, p>& mx3)
+template <uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+void mul(const matrix<m, n, stride1, D1>& mx1, const matrix<n, p, stride2, D2>& mx2, matrix<m, p, stride3, D3>& mx3)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
