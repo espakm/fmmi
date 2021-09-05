@@ -39,7 +39,7 @@ struct matrix
 
     template <uint16_t y, uint16_t x, uint16_t p_height, uint16_t p_width>
     inline
-    const matrix<p_height, p_width, stride, double*> partition() const;
+    const matrix<p_height, p_width, stride, const double*> partition() const;
 
     matrix(double* data)
         : data_(data)
@@ -108,9 +108,9 @@ matrix<p_height, p_width, stride, double*> matrix<height, width, stride, D>::par
 template <uint16_t height, uint16_t width, uint16_t stride, typename D>
 template <uint16_t y, uint16_t x, uint16_t p_height, uint16_t p_width>
 inline
-const matrix<p_height, p_width, stride, double*> matrix<height, width, stride, D>::partition() const
+const matrix<p_height, p_width, stride, const double*> matrix<height, width, stride, D>::partition() const
 {
-    return matrix<p_height, p_width, stride, double*>(&data_[y * stride + x]);
+    return matrix<p_height, p_width, stride, const double*>(&data_[y * stride + x]);
 }
 
 
@@ -122,6 +122,19 @@ void add(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& 
         for (uint16_t j = 0; j < n; ++j)
         {
             mx3(i, j) = mx1(i, j) + mx2(i, j);
+        }
+    }
+}
+
+
+template <uint16_t m, uint16_t n, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+void sub(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& mx2, matrix<m, n, stride3, D3>& mx3)
+{
+    for (uint16_t i = 0; i < m; ++i)
+    {
+        for (uint16_t j = 0; j < n; ++j)
+        {
+            mx3(i, j) = mx1(i, j) - mx2(i, j);
         }
     }
 }
