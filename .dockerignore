@@ -1,0 +1,5 @@
+/.git
+/.gitignore
+/build
+/CMakeLists.txt.user*
+/.dockerfile
