@@ -27,69 +27,73 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         return;
     }
 
-    if constexpr (m == n && n == p && (m % 2) == 0)
+    else if constexpr ((m % 2) == 0 && (n % 2) == 0 && (p % 2) == 0)
     {
-        constexpr uint16_t h = m / 2;
+        constexpr uint16_t mh = m / 2;
+        constexpr uint16_t nh = n / 2;
+        constexpr uint16_t ph = p / 2;
 
-        const auto a00 = a.template partition<0, 0, h, h>();
-        const auto a01 = a.template partition<0, h, h, h>();
-        const auto a10 = a.template partition<h, 0, h, h>();
-        const auto a11 = a.template partition<h, h, h, h>();
+        const auto a00 = a.template partition<0, 0, mh, nh>();
+        const auto a01 = a.template partition<0, nh, mh, nh>();
+        const auto a10 = a.template partition<mh, 0, mh, nh>();
+        const auto a11 = a.template partition<mh, nh, mh, nh>();
 
-        const auto b00 = b.template partition<0, 0, h, h>();
-        const auto b01 = b.template partition<0, h, h, h>();
-        const auto b10 = b.template partition<h, 0, h, h>();
-        const auto b11 = b.template partition<h, h, h, h>();
 
-        auto c00 = c.template partition<0, 0, h, h>();
-        auto c01 = c.template partition<0, h, h, h>();
-        auto c10 = c.template partition<h, 0, h, h>();
-        auto c11 = c.template partition<h, h, h, h>();
+        const auto b00 = b.template partition<0, 0, nh, ph>();
+        const auto b01 = b.template partition<0, ph, nh, ph>();
+        const auto b10 = b.template partition<nh, 0, nh, ph>();
+        const auto b11 = b.template partition<nh, ph, nh, ph>();
 
-        matrix<h, h> tmp1, tmp2;
+        auto c00 = c.template partition<0, 0, mh, ph>();
+        auto c01 = c.template partition<0, ph, mh, ph>();
+        auto c10 = c.template partition<mh, 0, mh, ph>();
+        auto c11 = c.template partition<mh, ph, mh, ph>();
 
-        matrix<h, h> p1;
+        matrix<mh, nh> tmp1;
+        matrix<nh, ph> tmp2;
+
+        matrix<mh, ph> p1;
         add(a00, a11, tmp1);
         add(b00, b11, tmp2);
         mul_fast(tmp1, tmp2, p1);
 
-        matrix<h, h> p2;
+        matrix<mh, ph> p2;
         add(a10, a11, tmp1);
         mul_fast(tmp1, b00, p2);
 
-        matrix<h, h> p3;
-        sub(b01, b11, tmp1);
-        mul_fast(a00, tmp1, p3);
+        matrix<mh, ph> p3;
+        sub(b01, b11, tmp2);
+        mul_fast(a00, tmp2, p3);
 
-        matrix<h, h> p4;
-        sub(b10, b00, tmp1);
-        mul_fast(a11, tmp1, p4);
+        matrix<mh, ph> p4;
+        sub(b10, b00, tmp2);
+        mul_fast(a11, tmp2, p4);
 
-        matrix<h, h> p5;
+        matrix<mh, ph> p5;
         add(a00, a01, tmp1);
         mul_fast(tmp1, b11, p5);
 
-        matrix<h, h> p6;
+        matrix<mh, ph> p6;
         sub(a10, a00, tmp1);
         add(b00, b01, tmp2);
         mul_fast(tmp1, tmp2, p6);
 
-        matrix<h, h> p7;
+        matrix<mh, ph> p7;
         sub(a01, a11, tmp1);
         add(b10, b11, tmp2);
         mul_fast(tmp1, tmp2, p7);
 
-        add(p1, p4, tmp1);
-        sub(tmp1, p5, tmp2);
-        add(tmp2, p7, c00);
+        add(p1, p4, c00);
+        sub(c00, p5, c00);
+        add(c00, p7, c00);
 
         add(p3, p5, c01);
 
         add(p2, p4, c10);
 
-        add(p1, p3, tmp1);
-        sub(tmp1, p2, tmp2);
-        add(tmp2, p6, c11);
+        add(p1, p3, c11);
+        sub(c11, p2, c11);
+        add(c11, p6, c11);
 
         return;
     }

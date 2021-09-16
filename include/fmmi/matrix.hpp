@@ -7,13 +7,50 @@
 namespace fmmi
 {
 
+constexpr uint16_t log_2(uint16_t n)
+{
+    return n < 2 ? 0 : log_2(n / 2) + 1;
+}
+
+
+constexpr std::size_t exp_2(uint16_t n)
+{
+    return n == 0 ? 1 : 2 * exp_2(n - 1);
+}
+
+
+constexpr std::size_t padded_size(uint16_t n)
+{
+    return n < 2 ? 1 : exp_2(log_2(n - 1) + 1);
+}
+
+
+constexpr std::size_t padded_size(uint16_t height, uint16_t width)
+{
+    auto ps = padded_size(height > width ? height : width);
+    return ps * ps;
+}
+
+
 template <uint16_t height, uint16_t width, uint16_t stride = width, typename D = double[height * width]>
 struct matrix
 {
-    template <typename ...T>
-    matrix(T... init_list)
-        : data_{init_list...}
+    matrix()
+        : data_{}
     {
+    }
+
+    matrix(std::initializer_list<double> init_list)
+        : data_{}
+    {
+        auto it_init = std::begin(init_list);
+        auto it_data = std::begin(data_);
+        for (uint16_t y = 0; y < height; ++y)
+        {
+            std::copy_n(it_init, width, it_data);
+            it_init += width;
+            it_data += stride;
+        }
     }
 
     inline
