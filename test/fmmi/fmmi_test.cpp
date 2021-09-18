@@ -46,4 +46,18 @@ TEST_CASE("fmmi mul_fast")
 
         CHECK_EQ(c, d);
     }
+
+    SUBCASE("3x3 times 3x3")
+    {
+        const auto a = mx1.partition<0, 0, 3, 3>();
+        const auto b = mx2.partition<0, 0, 3, 3>();
+
+        matrix<3, 3> c;
+        mul(a, b, c);
+
+        matrix<3, 3> d;
+        mul_fast(a, b, d);
+
+        CHECK_EQ(c, d);
+    }
 }

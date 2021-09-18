@@ -9,7 +9,15 @@ namespace fmmi
 template <uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
 void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2>& b, matrix<m, p, stride3, D3>& c)
 {
-    if constexpr (m == 2 && n == 2 && p == 2)
+    if constexpr (m == 1 && n == 1 && p == 1)
+    {
+        c(0, 0) = a(0, 0) * b(0, 0);
+    }
+    else if constexpr (m == 1 || n == 1 || p == 1)
+    {
+        mul(a, b, c);
+    }
+    else if constexpr (m == 2 && n == 2 && p == 2)
     {
         const auto p1 = (a(0, 0) + a(1, 1)) * (b(0, 0) + b(1, 1));
         const auto p2 = (a(1, 0) + a(1, 1)) * b(0, 0);
@@ -23,10 +31,7 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         c(0, 1) = p3 + p5;
         c(1, 0) = p2 + p4;
         c(1, 1) = p1 + p3 - p2 + p6;
-
-        return;
     }
-
     else if constexpr ((m % 2) == 0 && (n % 2) == 0 && (p % 2) == 0)
     {
         constexpr uint16_t mh = m / 2;
@@ -94,11 +99,40 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         add(p1, p3, c11);
         sub(c11, p2, c11);
         add(c11, p6, c11);
-
-        return;
     }
+    else if constexpr ((m % 2) == 1)
+    {
+        auto a0 = a.template partition<0, 0, 1, n>();
+        auto a1 = a.template partition<1, 0, m - 1, n>();
+        auto c0 = c.template partition<0, 0, 1, p>();
+        auto c1 = c.template partition<1, 0, m - 1, p>();
 
-    throw std::runtime_error("baj van");
+        mul_fast(a0, b, c0);
+        mul_fast(a1, b, c1);
+    }
+    else if constexpr ((p % 2) == 1)
+    {
+        auto b0 = b.template partition<0, 0, n, 1>();
+        auto b1 = b.template partition<0, 1, n, p - 1>();
+        auto c0 = c.template partition<0, 0, m, 1>();
+        auto c1 = c.template partition<0, 1, m, p - 1>();
+
+        mul_fast(a, b0, c0);
+        mul_fast(a, b1, c1);
+    }
+    else // if constexpr ((n % 2) == 1)
+    {
+        auto a0 = a.template partition<0, 0, m, 1>();
+        auto a1 = a.template partition<0, 1, m, n - 1>();
+        auto b0 = b.template partition<0, 0, 1, p>();
+        auto b1 = b.template partition<1, 0, n - 1, p>();
+
+        matrix<m, p> tmp1;
+        mul(a0, b0, tmp1);
+
+        mul_fast(a1, b1, c);
+        add(c, tmp1, c);
+    }
 }
 
 }

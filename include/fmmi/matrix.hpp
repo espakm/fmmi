@@ -83,6 +83,11 @@ struct matrix
     {
     }
 
+    matrix(const double* data)
+        : data_(const_cast<double*>(data))
+    {
+    }
+
     D data_;
 };
 
