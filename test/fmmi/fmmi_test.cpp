@@ -1,4 +1,4 @@
-#include <doctest.h>
+#include <catch.hpp>
 
 #include "fmmi/fmmi.hpp"
 
@@ -19,7 +19,7 @@ TEST_CASE("fmmi mul_fast")
         -19.0, -20.0, -21.0, -22.0, -23.0, -24.0,
     };
 
-    SUBCASE("2x2 times 2x2")
+    SECTION("2x2 times 2x2")
     {
         const auto a = mx1.partition<0, 0, 2, 2>();
         const auto b = mx2.partition<0, 0, 2, 2>();
@@ -30,10 +30,10 @@ TEST_CASE("fmmi mul_fast")
         matrix<2, 2> d;
         mul_fast(a, b, d);
 
-        CHECK_EQ(c, d);
+        CHECK(c == d);
     }
 
-    SUBCASE("4x4 times 4x4")
+    SECTION("4x4 times 4x4")
     {
         const auto a = mx1.partition<0, 0, 4, 4>();
         const auto b = mx2.partition<0, 0, 4, 4>();
@@ -44,10 +44,10 @@ TEST_CASE("fmmi mul_fast")
         matrix<4, 4> d;
         mul_fast(a, b, d);
 
-        CHECK_EQ(c, d);
+        CHECK(c == d);
     }
 
-    SUBCASE("3x3 times 3x3")
+    SECTION("3x3 times 3x3")
     {
         const auto a = mx1.partition<0, 0, 3, 3>();
         const auto b = mx2.partition<0, 0, 3, 3>();
@@ -58,6 +58,6 @@ TEST_CASE("fmmi mul_fast")
         matrix<3, 3> d;
         mul_fast(a, b, d);
 
-        CHECK_EQ(c, d);
+        CHECK(c == d);
     }
 }
