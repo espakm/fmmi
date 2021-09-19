@@ -6,29 +6,6 @@
 namespace fmmi
 {
 
-template <uint16_t m, uint16_t n,
-          uint16_t stride1, typename D1,
-          uint16_t stride2, typename D2,
-          uint16_t stride3, typename D3,
-          uint16_t stride4, typename D4,
-          uint16_t stride5, typename D5>
-inline
-void add_sub_add(const matrix<m, n, stride1, D1>& a,
-                 const matrix<m, n, stride2, D2>& b,
-                 const matrix<m, n, stride3, D3>& c,
-                 const matrix<m, n, stride4, D4>& d,
-                 matrix<m, n, stride5, D5>& e)
-{
-    for (uint16_t y = 0; y < m; ++y)
-    {
-        for (uint16_t x = 0; x < n; ++x)
-        {
-            e(y, x) = a(y, x) + b(y, x) - c(y, x) + d(y, x);
-        }
-    }
-}
-
-
 template <uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
 inline
 void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2>& b, matrix<m, p, stride3, D3>& c)
@@ -78,47 +55,48 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         auto c10 = c.template partition<mh, 0, mh, ph>();
         auto c11 = c.template partition<mh, ph, mh, ph>();
 
-        matrix<mh, nh> tmp1;
-        matrix<nh, ph> tmp2;
+        matrix<mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
+        matrix<nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
 
-        matrix<mh, ph> p1;
-        add(a00, a11, tmp1);
-        add(b00, b11, tmp2);
-        mul_fast(tmp1, tmp2, p1);
+        for (uint16_t i = 0; i < nh; ++i)
+        {
+            for (uint16_t j = 0; j < mh; ++j)
+            {
+                tmp1(j, i) = a00(j, i) + a11(j, i);
+                tmp2(j, i) = a10(j, i) + a11(j, i);
+                tmp3(j, i) = a00(j, i) + a01(j, i);
+                tmp4(j, i) = a10(j, i) - a00(j, i);
+                tmp5(j, i) = a01(j, i) - a11(j, i);
+            }
+            for (uint16_t j = 0; j < ph; ++j)
+            {
+                tmp6(i, j) = b00(i, j) + b11(i, j);
+                tmp7(i, j) = b01(i, j) - b11(i, j);
+                tmp8(i, j) = b10(i, j) - b00(i, j);
+                tmp9(i, j) = b00(i, j) + b01(i, j);
+                tmp10(i, j) = b10(i, j) + b11(i, j);
+            }
+        }
 
-        matrix<mh, ph> p2;
-        add(a10, a11, tmp1);
-        mul_fast(tmp1, b00, p2);
+        matrix<mh, ph> p1, p2, p3, p4, p5, p6, p7;
+        mul_fast(tmp1, tmp6, p1);
+        mul_fast(tmp2, b00, p2);
+        mul_fast(a00, tmp7, p3);
+        mul_fast(a11, tmp8, p4);
+        mul_fast(tmp3, b11, p5);
+        mul_fast(tmp4, tmp9, p6);
+        mul_fast(tmp5, tmp10, p7);
 
-        matrix<mh, ph> p3;
-        sub(b01, b11, tmp2);
-        mul_fast(a00, tmp2, p3);
-
-        matrix<mh, ph> p4;
-        sub(b10, b00, tmp2);
-        mul_fast(a11, tmp2, p4);
-
-        matrix<mh, ph> p5;
-        add(a00, a01, tmp1);
-        mul_fast(tmp1, b11, p5);
-
-        matrix<mh, ph> p6;
-        sub(a10, a00, tmp1);
-        add(b00, b01, tmp2);
-        mul_fast(tmp1, tmp2, p6);
-
-        matrix<mh, ph> p7;
-        sub(a01, a11, tmp1);
-        add(b10, b11, tmp2);
-        mul_fast(tmp1, tmp2, p7);
-
-        add_sub_add(p1, p4, p5, p7, c00);
-
-        add(p3, p5, c01);
-
-        add(p2, p4, c10);
-
-        add_sub_add(p1, p3, p2, p6, c11);
+        for (uint16_t i = 0; i < mh; ++i)
+        {
+            for (uint16_t j = 0; j < ph; ++j)
+            {
+                c00(i, j) = p1(i, j) + p4(i, j) - p5(i, j) + p7(i, j);
+                c01(i, j) = p3(i, j) + p5(i, j);
+                c10(i, j) = p2(i, j) + p4(i, j);
+                c11(i, j) = p1(i, j) + p3(i, j) - p2(i, j) + p6(i, j);
+            }
+        }
     }
     else if constexpr ((m % 2) == 1)
     {
