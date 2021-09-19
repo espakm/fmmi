@@ -6,7 +6,31 @@
 namespace fmmi
 {
 
+template <uint16_t m, uint16_t n,
+          uint16_t stride1, typename D1,
+          uint16_t stride2, typename D2,
+          uint16_t stride3, typename D3,
+          uint16_t stride4, typename D4,
+          uint16_t stride5, typename D5>
+inline
+void add_sub_add(const matrix<m, n, stride1, D1>& a,
+                 const matrix<m, n, stride2, D2>& b,
+                 const matrix<m, n, stride3, D3>& c,
+                 const matrix<m, n, stride4, D4>& d,
+                 matrix<m, n, stride5, D5>& e)
+{
+    for (uint16_t y = 0; y < m; ++y)
+    {
+        for (uint16_t x = 0; x < n; ++x)
+        {
+            e(y, x) = a(y, x) + b(y, x) - c(y, x) + d(y, x);
+        }
+    }
+}
+
+
 template <uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+inline
 void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2>& b, matrix<m, p, stride3, D3>& c)
 {
     if constexpr (m == 1 && n == 1 && p == 1)
@@ -88,17 +112,13 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         add(b10, b11, tmp2);
         mul_fast(tmp1, tmp2, p7);
 
-        add(p1, p4, c00);
-        sub(c00, p5, c00);
-        add(c00, p7, c00);
+        add_sub_add(p1, p4, p5, p7, c00);
 
         add(p3, p5, c01);
 
         add(p2, p4, c10);
 
-        add(p1, p3, c11);
-        sub(c11, p2, c11);
-        add(c11, p6, c11);
+        add_sub_add(p1, p3, p2, p6, c11);
     }
     else if constexpr ((m % 2) == 1)
     {
