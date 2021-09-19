@@ -1,4 +1,7 @@
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch.hpp>
+
+#include <random>
 
 #include "fmmi/fmmi.hpp"
 
@@ -313,4 +316,96 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
     mul_fast(a, b, d);
 
     CHECK(c == d);
+}
+
+
+TEST_CASE("fmmi mul_fast benchmark")
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(-200, +200);
+
+    constexpr uint16_t s = 256;
+    matrix<s, s> mx1, mx2, mx3;
+
+    for (uint16_t i = 0; i < s; ++i)
+    {
+        for (uint16_t j = 0; j < s; ++j)
+        {
+            mx1(i, j) = distrib(gen);
+            mx2(i, j) = distrib(gen);
+        }
+    }
+
+    SECTION("2x2")
+    {
+        constexpr uint16_t n = 2;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+
+    SECTION("4x4")
+    {
+        constexpr uint16_t n = 4;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+
+    SECTION("8x8")
+    {
+        constexpr uint16_t n = 8;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+
+    SECTION("16x16")
+    {
+        constexpr uint16_t n = 16;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
 }
