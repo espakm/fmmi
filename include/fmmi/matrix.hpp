@@ -32,7 +32,8 @@ constexpr std::size_t padded_size(uint16_t height, uint16_t width)
 }
 
 
-template <uint16_t height, uint16_t width, uint16_t stride = width, typename D = double[height * width]>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride = width,
+          typename D = T[height * width]>
 struct matrix
 {
     matrix()
@@ -40,7 +41,7 @@ struct matrix
     {
     }
 
-    matrix(std::initializer_list<double> init_list)
+    matrix(std::initializer_list<T> init_list)
         : data_{}
     {
         auto it_init = std::begin(init_list);
@@ -54,37 +55,37 @@ struct matrix
     }
 
     inline
-    double operator()(uint16_t y, uint16_t x) const;
+    T operator()(uint16_t y, uint16_t x) const;
 
     inline
-    double& operator()(uint16_t y, uint16_t x);
+    T& operator()(uint16_t y, uint16_t x);
 
     /// Matrix equality.
     /// Note that this implementation does not allow any 'epsilon' difference
     /// between elements.
     template <uint16_t stride2, typename D2>
     inline
-    bool operator==(const matrix<height, width, stride2, D2>& mx) const;
+    bool operator==(const matrix<T, height, width, stride2, D2>& mx) const;
 
     template <uint16_t stride2, typename D2>
     inline
-    bool operator!=(const matrix<height, width, stride2, D2>& mx) const;
+    bool operator!=(const matrix<T, height, width, stride2, D2>& mx) const;
 
     template <uint16_t y, uint16_t x, uint16_t p_height, uint16_t p_width>
     inline
-    matrix<p_height, p_width, stride, double*> partition();
+    matrix<T, p_height, p_width, stride, T*> partition();
 
     template <uint16_t y, uint16_t x, uint16_t p_height, uint16_t p_width>
     inline
-    const matrix<p_height, p_width, stride, const double*> partition() const;
+    const matrix<T, p_height, p_width, stride, const T*> partition() const;
 
-    matrix(double* data)
+    matrix(T* data)
         : data_(data)
     {
     }
 
-    matrix(const double* data)
-        : data_(const_cast<double*>(data))
+    matrix(const T* data)
+        : data_(const_cast<T*>(data))
     {
     }
 
@@ -92,26 +93,26 @@ struct matrix
 };
 
 
-template <uint16_t height, uint16_t width, uint16_t stride, typename D>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride, typename D>
 inline
-double matrix<height, width, stride, D>::operator()(uint16_t y, uint16_t x) const
+T matrix<T, height, width, stride, D>::operator()(uint16_t y, uint16_t x) const
 {
     return data_[y * stride + x];
 }
 
 
-template <uint16_t height, uint16_t width, uint16_t stride, typename D>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride, typename D>
 inline
-double& matrix<height, width, stride, D>::operator()(uint16_t y, uint16_t x)
+T& matrix<T, height, width, stride, D>::operator()(uint16_t y, uint16_t x)
 {
     return data_[y * stride + x];
 }
 
 
-template <uint16_t height, uint16_t width, uint16_t stride, typename D>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride, typename D>
 template <uint16_t stride2, typename D2>
 inline
-bool matrix<height, width, stride, D>::operator==(const matrix<height, width, stride2, D2>& mx) const
+bool matrix<T, height, width, stride, D>::operator==(const matrix<T, height, width, stride2, D2>& mx) const
 {
     if constexpr (width == stride && width == stride2)
     {
@@ -129,35 +130,35 @@ bool matrix<height, width, stride, D>::operator==(const matrix<height, width, st
 }
 
 
-template <uint16_t height, uint16_t width, uint16_t stride, typename D>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride, typename D>
 template <uint16_t stride2, typename D2>
 inline
-bool matrix<height, width, stride, D>::operator!=(const matrix<height, width, stride2, D2>& mx) const
+bool matrix<T, height, width, stride, D>::operator!=(const matrix<T, height, width, stride2, D2>& mx) const
 {
     return !(*this == mx);
 }
 
 
-template <uint16_t height, uint16_t width, uint16_t stride, typename D>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride, typename D>
 template <uint16_t y, uint16_t x, uint16_t p_height, uint16_t p_width>
 inline
-matrix<p_height, p_width, stride, double*> matrix<height, width, stride, D>::partition()
+matrix<T, p_height, p_width, stride, T*> matrix<T, height, width, stride, D>::partition()
 {
-    return matrix<p_height, p_width, stride, double*>(&data_[y * stride + x]);
+    return matrix<T, p_height, p_width, stride, T*>(&data_[y * stride + x]);
 }
 
 
-template <uint16_t height, uint16_t width, uint16_t stride, typename D>
+template <typename T, uint16_t height, uint16_t width, uint16_t stride, typename D>
 template <uint16_t y, uint16_t x, uint16_t p_height, uint16_t p_width>
 inline
-const matrix<p_height, p_width, stride, const double*> matrix<height, width, stride, D>::partition() const
+const matrix<T, p_height, p_width, stride, const T*> matrix<T, height, width, stride, D>::partition() const
 {
-    return matrix<p_height, p_width, stride, const double*>(&data_[y * stride + x]);
+    return matrix<T, p_height, p_width, stride, const T*>(&data_[y * stride + x]);
 }
 
 
-template <uint16_t m, uint16_t n, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
-void add(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& mx2, matrix<m, n, stride3, D3>& mx3)
+template <typename T, uint16_t m, uint16_t n, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+void add(const matrix<T, m, n, stride1, D1>& mx1, const matrix<T, m, n, stride2, D2>& mx2, matrix<T, m, n, stride3, D3>& mx3)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -169,8 +170,8 @@ void add(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& 
 }
 
 
-template <uint16_t m, uint16_t n, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
-void sub(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& mx2, matrix<m, n, stride3, D3>& mx3)
+template <typename T, uint16_t m, uint16_t n, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+void sub(const matrix<T, m, n, stride1, D1>& mx1, const matrix<T, m, n, stride2, D2>& mx2, matrix<T, m, n, stride3, D3>& mx3)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -182,14 +183,14 @@ void sub(const matrix<m, n, stride1, D1>& mx1, const matrix<m, n, stride2, D2>& 
 }
 
 
-template <uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
-void mul(const matrix<m, n, stride1, D1>& mx1, const matrix<n, p, stride2, D2>& mx2, matrix<m, p, stride3, D3>& mx3)
+template <typename T, uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+void mul(const matrix<T, m, n, stride1, D1>& mx1, const matrix<T, n, p, stride2, D2>& mx2, matrix<T, m, p, stride3, D3>& mx3)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
         for (uint16_t j = 0; j < p; ++j)
         {
-            double sum = 0.0;
+            T sum{};
             for (uint16_t k = 0; k < n; ++k)
             {
                 sum += mx1(i, k) * mx2(k, j);

@@ -49,7 +49,7 @@ TEST_CASE("padded_size")
 
 TEST_CASE("matrix::matrix()")
 {
-    matrix<5, 4> mx{
+    matrix<double, 5, 4> mx{
         1.0, 2.0, 3.0, 4.0,
         5.0, 6.0, 7.0, 8.0,
         9.0, 10.0, 11.0, 12.0,
@@ -82,12 +82,12 @@ TEST_CASE("matrix::matrix()")
 
 TEST_CASE("matrix::operator==()")
 {
-    matrix<2, 3> mx1{
+    matrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
     };
 
-    matrix<2, 3> mx2{
+    matrix<double, 2, 3> mx2{
         1.0, 2.0, 3.0,
         5.0, 6.0, 7.0,
     };
@@ -106,17 +106,17 @@ TEST_CASE("matrix::operator==()")
 
 TEST_CASE("add()")
 {
-    matrix<2, 3> mx1{
+    matrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
     };
 
-    matrix<2, 3> mx2{
+    matrix<double, 2, 3> mx2{
         10.0, 11.0, 12.0,
         20.0, 21.0, 22.0,
     };
 
-    matrix<2, 3> mx3;
+    matrix<double, 2, 3> mx3;
 
     add(mx1, mx2, mx3);
 
@@ -131,18 +131,18 @@ TEST_CASE("add()")
 
 TEST_CASE("mul()")
 {
-    matrix<2, 3> mx1{
+    matrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
     };
 
-    matrix<3, 2> mx2{
+    matrix<double, 3, 2> mx2{
         10.0, 11.0,
         20.0, 21.0,
         30.0, 31.0,
     };
 
-    matrix<2, 2> mx3;
+    matrix<double, 2, 2> mx3;
 
     mul(mx1, mx2, mx3);
 
@@ -155,7 +155,7 @@ TEST_CASE("mul()")
 
 TEST_CASE("matrix::partition()")
 {
-    matrix<5, 4> mx{
+    matrix<double, 5, 4> mx{
         1.0, 2.0, 3.0, 4.0,
         5.0, 6.0, 7.0, 8.0,
         9.0, 10.0, 11.0, 12.0,
@@ -163,23 +163,23 @@ TEST_CASE("matrix::partition()")
         17.0, 18.0, 19.0, 20.0,
     };
 
-    matrix<2, 3> mx11{
+    matrix<double, 2, 3> mx11{
         1.0, 2.0, 3.0,
         5.0, 6.0, 7.0,
     };
 
-    matrix<2, 1> mx12{
+    matrix<double, 2, 1> mx12{
         4.0,
         8.0,
     };
 
-    matrix<3, 1> mx21{
+    matrix<double, 3, 1> mx21{
         9.0,
         13.0,
         17.0,
     };
 
-    matrix<3, 3> mx22{
+    matrix<double, 3, 3> mx22{
         10.0, 11.0, 12.0,
         14.0, 15.0, 16.0,
         18.0, 19.0, 20.0,
@@ -199,7 +199,7 @@ TEST_CASE("matrix::partition()")
 
 TEST_CASE("matrix partition addition")
 {
-    matrix<4, 6> mx1{
+    matrix<double, 4, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
         7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
@@ -211,7 +211,7 @@ TEST_CASE("matrix partition addition")
     auto mx1_part21 = mx1.partition<2, 0, 2, 3>();
     auto mx1_part22 = mx1.partition<2, 3, 2, 3>();
 
-    matrix<4, 6> mx2{
+    matrix<double, 4, 6> mx2{
         -1.0, -2.0, -3.0, -4.0, -5.0, -6.0,
         -7.0, -8.0, -9.0, -10.0, -11.0, -12.0,
         -13.0, -14.0, -15.0, -16.0, -17.0, -18.0,
@@ -223,7 +223,7 @@ TEST_CASE("matrix partition addition")
     auto mx2_part21 = mx2.partition<2, 0, 2, 3>();
     auto mx2_part22 = mx2.partition<2, 3, 2, 3>();
 
-    matrix<4, 6> mx3;
+    matrix<double, 4, 6> mx3;
 
     auto mx3_part11 = mx3.partition<0, 0, 2, 3>();
     auto mx3_part12 = mx3.partition<0, 3, 2, 3>();
@@ -232,7 +232,7 @@ TEST_CASE("matrix partition addition")
 
     add(mx1, mx2, mx3);
 
-    matrix<4, 6> mx4;
+    matrix<double, 4, 6> mx4;
 
     auto mx4_part11 = mx4.partition<0, 0, 2, 3>();
     auto mx4_part12 = mx4.partition<0, 3, 2, 3>();
@@ -255,7 +255,7 @@ TEST_CASE("matrix partition addition")
 
 TEST_CASE("matrix partition multiplication")
 {
-    matrix<4, 6> mx1{
+    matrix<double, 4, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
         7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
@@ -267,7 +267,7 @@ TEST_CASE("matrix partition multiplication")
     auto mx1_part21 = mx1.partition<2, 0, 2, 3>();
     auto mx1_part22 = mx1.partition<2, 3, 2, 3>();
 
-    matrix<6, 4> mx2{
+    matrix<double, 6, 4> mx2{
         -1.0, -2.0, -3.0, -4.0,
         -5.0, -6.0, -7.0, -8.0,
         -9.0, -10.0, -11.0, -12.0,
@@ -281,7 +281,7 @@ TEST_CASE("matrix partition multiplication")
     auto mx2_part21 = mx2.partition<3, 0, 3, 2>();
     auto mx2_part22 = mx2.partition<3, 2, 3, 2>();
 
-    matrix<4, 4> mx3;
+    matrix<double, 4, 4> mx3;
 
     auto mx3_part11 = mx3.partition<0, 0, 2, 2>();
     auto mx3_part12 = mx3.partition<0, 2, 2, 2>();
@@ -290,15 +290,15 @@ TEST_CASE("matrix partition multiplication")
 
     mul(mx1, mx2, mx3);
 
-    matrix<4, 4> mx4;
+    matrix<double, 4, 4> mx4;
 
     auto mx4_part11 = mx4.partition<0, 0, 2, 2>();
     auto mx4_part12 = mx4.partition<0, 2, 2, 2>();
     auto mx4_part21 = mx4.partition<2, 0, 2, 2>();
     auto mx4_part22 = mx4.partition<2, 2, 2, 2>();
 
-    matrix<2, 2> mx_tmp1;
-    matrix<2, 2> mx_tmp2;
+    matrix<double, 2, 2> mx_tmp1;
+    matrix<double, 2, 2> mx_tmp2;
 
     mul(mx1_part11, mx2_part11, mx_tmp1);
     mul(mx1_part12, mx2_part21, mx_tmp2);

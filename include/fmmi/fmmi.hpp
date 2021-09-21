@@ -6,9 +6,14 @@
 namespace fmmi
 {
 
-template <uint16_t m, uint16_t n, uint16_t p, uint16_t stride1, typename D1, uint16_t stride2, typename D2, uint16_t stride3, typename D3>
+template <typename T, uint16_t m, uint16_t n, uint16_t p,
+          uint16_t stride1, typename D1,
+          uint16_t stride2, typename D2,
+          uint16_t stride3, typename D3>
 inline
-void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2>& b, matrix<m, p, stride3, D3>& c)
+void mul_fast(const matrix<T, m, n, stride1, D1>& a,
+              const matrix<T, n, p, stride2, D2>& b,
+              matrix<T, m, p, stride3, D3>& c)
 {
     if constexpr (m == 1 && n == 1 && p == 1)
     {
@@ -55,8 +60,8 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         auto c10 = c.template partition<mh, 0, mh, ph>();
         auto c11 = c.template partition<mh, ph, mh, ph>();
 
-        matrix<mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
-        matrix<nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
+        matrix<T, mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
+        matrix<T, nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
 
         for (uint16_t i = 0; i < nh; ++i)
         {
@@ -78,7 +83,7 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
             }
         }
 
-        matrix<mh, ph> p1, p2, p3, p4, p5, p6, p7;
+        matrix<T, mh, ph> p1, p2, p3, p4, p5, p6, p7;
         mul_fast(tmp1, tmp6, p1);
         mul_fast(tmp2, b00, p2);
         mul_fast(a00, tmp7, p3);
@@ -125,7 +130,7 @@ void mul_fast(const matrix<m, n, stride1, D1>& a, const matrix<n, p, stride2, D2
         auto b0 = b.template partition<0, 0, 1, p>();
         auto b1 = b.template partition<1, 0, n - 1, p>();
 
-        matrix<m, p> tmp1;
+        matrix<T, m, p> tmp1;
         mul(a0, b0, tmp1);
 
         mul_fast(a1, b1, c);

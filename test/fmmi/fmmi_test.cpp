@@ -9,7 +9,7 @@ using namespace fmmi;
 
 TEST_CASE("fmmi mul_fast")
 {
-    matrix<6, 6> mx1{
+    matrix<double, 6, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
         7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
@@ -17,7 +17,7 @@ TEST_CASE("fmmi mul_fast")
         25.0, 26.0, 27.0, 28.0, 29.0, 30.0,
         31.0, 32.0, 33.0, 34.0, 35.0, 36.0,
     };
-    matrix<6, 6> mx2{
+    matrix<double, 6, 6> mx2{
         -1.0, -2.0, -3.0, -4.0, -5.0, -6.0,
         -7.0, -8.0, -9.0, -10.0, -11.0, -12.0,
         -13.0, -14.0, -15.0, -16.0, -17.0, -18.0,
@@ -31,10 +31,10 @@ TEST_CASE("fmmi mul_fast")
         const auto a = mx1.partition<0, 0, 2, 2>();
         const auto b = mx2.partition<0, 0, 2, 2>();
 
-        matrix<2, 2> c;
+        matrix<double, 2, 2> c;
         mul(a, b, c);
 
-        matrix<2, 2> d;
+        matrix<double, 2, 2> d;
         mul_fast(a, b, d);
 
         CHECK(c == d);
@@ -45,10 +45,10 @@ TEST_CASE("fmmi mul_fast")
         const auto a = mx1.partition<0, 0, 4, 4>();
         const auto b = mx2.partition<0, 0, 4, 4>();
 
-        matrix<4, 4> c;
+        matrix<double, 4, 4> c;
         mul(a, b, c);
 
-        matrix<4, 4> d;
+        matrix<double, 4, 4> d;
         mul_fast(a, b, d);
 
         CHECK(c == d);
@@ -59,10 +59,10 @@ TEST_CASE("fmmi mul_fast")
         const auto a = mx1.partition<0, 0, 3, 3>();
         const auto b = mx2.partition<0, 0, 3, 3>();
 
-        matrix<3, 3> c;
+        matrix<double, 3, 3> c;
         mul(a, b, c);
 
-        matrix<3, 3> d;
+        matrix<double, 3, 3> d;
         mul_fast(a, b, d);
 
         CHECK(c == d);
@@ -289,7 +289,7 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
                        (6, 6, 5),
                        (6, 6, 6))
 {
-    matrix<6, 6> mx1{
+    matrix<double, 6, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
         7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
@@ -297,7 +297,7 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
         25.0, 26.0, 27.0, 28.0, 29.0, 30.0,
         31.0, 32.0, 33.0, 34.0, 35.0, 36.0,
     };
-    matrix<6, 6> mx2{
+    matrix<double, 6, 6> mx2{
         -1.0, -2.0, -3.0, -4.0, -5.0, -6.0,
         -7.0, -8.0, -9.0, -10.0, -11.0, -12.0,
         -13.0, -14.0, -15.0, -16.0, -17.0, -18.0,
@@ -309,10 +309,10 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
     const auto a = mx1.partition<0, 0, m, n>();
     const auto b = mx2.partition<0, 0, n, p>();
 
-    matrix<m, p> c;
+    matrix<double, m, p> c;
     mul(a, b, c);
 
-    matrix<m, p> d;
+    matrix<double, m, p> d;
     mul_fast(a, b, d);
 
     CHECK(c == d);
@@ -326,7 +326,99 @@ TEST_CASE("fmmi mul_fast benchmark")
     std::uniform_int_distribution<> distrib(-200, +200);
 
     constexpr uint16_t s = 256;
-    matrix<s, s> mx1, mx2, mx3;
+    matrix<double, s, s> mx1, mx2, mx3;
+
+    for (uint16_t i = 0; i < s; ++i)
+    {
+        for (uint16_t j = 0; j < s; ++j)
+        {
+            mx1(i, j) = distrib(gen);
+            mx2(i, j) = distrib(gen);
+        }
+    }
+
+    SECTION("2x2")
+    {
+        constexpr uint16_t n = 2;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+
+    SECTION("4x4")
+    {
+        constexpr uint16_t n = 4;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+
+    SECTION("8x8")
+    {
+        constexpr uint16_t n = 8;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+
+    SECTION("16x16")
+    {
+        constexpr uint16_t n = 16;
+        auto a = mx1.template partition<0, 0, n, n>();
+        auto b = mx2.template partition<0, 0, n, n>();
+        auto c = mx3.template partition<0, 0, n, n>();
+
+        BENCHMARK("mul")
+        {
+            mul(a, b, c);
+        };
+
+        BENCHMARK("mul_fast")
+        {
+            mul_fast(a, b, c);
+        };
+    }
+}
+
+
+TEST_CASE("fmmi mul_fast benchmark int")
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(-200, +200);
+
+    constexpr uint16_t s = 256;
+    matrix<int, s, s> mx1, mx2, mx3;
 
     for (uint16_t i = 0; i < s; ++i)
     {
