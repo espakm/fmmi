@@ -28,8 +28,8 @@ TEST_CASE("fmmi mul_fast")
 
     SECTION("2x2 times 2x2")
     {
-        const auto a = mx1.partition<0, 0, 2, 2>();
-        const auto b = mx2.partition<0, 0, 2, 2>();
+        const auto& a = mx1.partition<2, 2>();
+        const auto& b = mx2.partition<2, 2>();
 
         matrix<double, 2, 2> c;
         mul(a, b, c);
@@ -42,8 +42,8 @@ TEST_CASE("fmmi mul_fast")
 
     SECTION("4x4 times 4x4")
     {
-        const auto a = mx1.partition<0, 0, 4, 4>();
-        const auto b = mx2.partition<0, 0, 4, 4>();
+        const auto& a = mx1.partition<4, 4>();
+        const auto& b = mx2.partition<4, 4>();
 
         matrix<double, 4, 4> c;
         mul(a, b, c);
@@ -56,8 +56,8 @@ TEST_CASE("fmmi mul_fast")
 
     SECTION("3x3 times 3x3")
     {
-        const auto a = mx1.partition<0, 0, 3, 3>();
-        const auto b = mx2.partition<0, 0, 3, 3>();
+        const auto& a = mx1.partition<3, 3>();
+        const auto& b = mx2.partition<3, 3>();
 
         matrix<double, 3, 3> c;
         mul(a, b, c);
@@ -306,8 +306,8 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
         -31.0, -32.0, -33.0, -34.0, -35.0, -36.0,
     };
 
-    const auto a = mx1.partition<0, 0, m, n>();
-    const auto b = mx2.partition<0, 0, n, p>();
+    const auto& a = mx1.partition<m, n>();
+    const auto& b = mx2.partition<n, p>();
 
     matrix<double, m, p> c;
     mul(a, b, c);
@@ -340,9 +340,9 @@ TEST_CASE("fmmi mul_fast benchmark")
     SECTION("2x2")
     {
         constexpr uint16_t n = 2;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -358,9 +358,9 @@ TEST_CASE("fmmi mul_fast benchmark")
     SECTION("4x4")
     {
         constexpr uint16_t n = 4;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -376,9 +376,9 @@ TEST_CASE("fmmi mul_fast benchmark")
     SECTION("8x8")
     {
         constexpr uint16_t n = 8;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -394,9 +394,9 @@ TEST_CASE("fmmi mul_fast benchmark")
     SECTION("16x16")
     {
         constexpr uint16_t n = 16;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -432,9 +432,9 @@ TEST_CASE("fmmi mul_fast benchmark int")
     SECTION("2x2")
     {
         constexpr uint16_t n = 2;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -450,9 +450,9 @@ TEST_CASE("fmmi mul_fast benchmark int")
     SECTION("4x4")
     {
         constexpr uint16_t n = 4;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -468,9 +468,9 @@ TEST_CASE("fmmi mul_fast benchmark int")
     SECTION("8x8")
     {
         constexpr uint16_t n = 8;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {
@@ -486,9 +486,9 @@ TEST_CASE("fmmi mul_fast benchmark int")
     SECTION("16x16")
     {
         constexpr uint16_t n = 16;
-        auto a = mx1.template partition<0, 0, n, n>();
-        auto b = mx2.template partition<0, 0, n, n>();
-        auto c = mx3.template partition<0, 0, n, n>();
+        const auto& a = mx1.partition<n, n>();
+        const auto& b = mx2.partition<n, n>();
+        auto& c = mx3.partition<n, n>();
 
         BENCHMARK("mul")
         {

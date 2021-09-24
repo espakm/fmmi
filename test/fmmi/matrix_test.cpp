@@ -185,10 +185,10 @@ TEST_CASE("matrix::partition()")
         18.0, 19.0, 20.0,
     };
 
-    auto part11 = mx.partition<0, 0, 2, 3>();
-    auto part12 = mx.partition<0, 3, 2, 1>();
-    auto part21 = mx.partition<2, 0, 3, 1>();
-    auto part22 = mx.partition<2, 1, 3, 3>();
+    const auto& part11 = mx.partition<2, 3, 0, 0>();
+    const auto& part12 = mx.partition<2, 1, 0, 3>();
+    const auto& part21 = mx.partition<3, 1, 2, 0>();
+    const auto& part22 = mx.partition<3, 3, 2, 1>();
 
     CHECK(part11 == mx11);
     CHECK(part12 == mx12);
@@ -206,10 +206,10 @@ TEST_CASE("matrix partition addition")
         19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
     };
 
-    auto mx1_part11 = mx1.partition<0, 0, 2, 3>();
-    auto mx1_part12 = mx1.partition<0, 3, 2, 3>();
-    auto mx1_part21 = mx1.partition<2, 0, 2, 3>();
-    auto mx1_part22 = mx1.partition<2, 3, 2, 3>();
+    const auto& mx1_part11 = mx1.partition<2, 3, 0, 0>();
+    const auto& mx1_part12 = mx1.partition<2, 3, 0, 3>();
+    const auto& mx1_part21 = mx1.partition<2, 3, 2, 0>();
+    const auto& mx1_part22 = mx1.partition<2, 3, 2, 3>();
 
     matrix<double, 4, 6> mx2{
         -1.0, -2.0, -3.0, -4.0, -5.0, -6.0,
@@ -218,26 +218,26 @@ TEST_CASE("matrix partition addition")
         -19.0, -20.0, -21.0, -22.0, -23.0, -24.0,
     };
 
-    auto mx2_part11 = mx2.partition<0, 0, 2, 3>();
-    auto mx2_part12 = mx2.partition<0, 3, 2, 3>();
-    auto mx2_part21 = mx2.partition<2, 0, 2, 3>();
-    auto mx2_part22 = mx2.partition<2, 3, 2, 3>();
+    const auto& mx2_part11 = mx2.partition<2, 3, 0, 0>();
+    const auto& mx2_part12 = mx2.partition<2, 3, 0, 3>();
+    const auto& mx2_part21 = mx2.partition<2, 3, 2, 0>();
+    const auto& mx2_part22 = mx2.partition<2, 3, 2, 3>();
 
     matrix<double, 4, 6> mx3;
 
-    auto mx3_part11 = mx3.partition<0, 0, 2, 3>();
-    auto mx3_part12 = mx3.partition<0, 3, 2, 3>();
-    auto mx3_part21 = mx3.partition<2, 0, 2, 3>();
-    auto mx3_part22 = mx3.partition<2, 3, 2, 3>();
+    auto& mx3_part11 = mx3.partition<2, 3, 0, 0>();
+    auto& mx3_part12 = mx3.partition<2, 3, 0, 3>();
+    auto& mx3_part21 = mx3.partition<2, 3, 2, 0>();
+    auto& mx3_part22 = mx3.partition<2, 3, 2, 3>();
 
     add(mx1, mx2, mx3);
 
     matrix<double, 4, 6> mx4;
 
-    auto mx4_part11 = mx4.partition<0, 0, 2, 3>();
-    auto mx4_part12 = mx4.partition<0, 3, 2, 3>();
-    auto mx4_part21 = mx4.partition<2, 0, 2, 3>();
-    auto mx4_part22 = mx4.partition<2, 3, 2, 3>();
+    auto& mx4_part11 = mx4.partition<2, 3, 0, 0>();
+    auto& mx4_part12 = mx4.partition<2, 3, 0, 3>();
+    auto& mx4_part21 = mx4.partition<2, 3, 2, 0>();
+    auto& mx4_part22 = mx4.partition<2, 3, 2, 3>();
 
     add(mx1_part11, mx2_part11, mx4_part11);
     add(mx1_part12, mx2_part12, mx4_part12);
@@ -262,10 +262,10 @@ TEST_CASE("matrix partition multiplication")
         19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
     };
 
-    auto mx1_part11 = mx1.partition<0, 0, 2, 3>();
-    auto mx1_part12 = mx1.partition<0, 3, 2, 3>();
-    auto mx1_part21 = mx1.partition<2, 0, 2, 3>();
-    auto mx1_part22 = mx1.partition<2, 3, 2, 3>();
+    const auto& mx1_part11 = mx1.partition<2, 3, 0, 0>();
+    const auto& mx1_part12 = mx1.partition<2, 3, 0, 3>();
+    const auto& mx1_part21 = mx1.partition<2, 3, 2, 0>();
+    const auto& mx1_part22 = mx1.partition<2, 3, 2, 3>();
 
     matrix<double, 6, 4> mx2{
         -1.0, -2.0, -3.0, -4.0,
@@ -276,26 +276,26 @@ TEST_CASE("matrix partition multiplication")
         -21.0, -22.0, -23.0, -24.0,
     };
 
-    auto mx2_part11 = mx2.partition<0, 0, 3, 2>();
-    auto mx2_part12 = mx2.partition<0, 2, 3, 2>();
-    auto mx2_part21 = mx2.partition<3, 0, 3, 2>();
-    auto mx2_part22 = mx2.partition<3, 2, 3, 2>();
+    const auto& mx2_part11 = mx2.partition<3, 2, 0, 0>();
+    const auto& mx2_part12 = mx2.partition<3, 2, 0, 2>();
+    const auto& mx2_part21 = mx2.partition<3, 2, 3, 0>();
+    const auto& mx2_part22 = mx2.partition<3, 2, 3, 2>();
 
     matrix<double, 4, 4> mx3;
 
-    auto mx3_part11 = mx3.partition<0, 0, 2, 2>();
-    auto mx3_part12 = mx3.partition<0, 2, 2, 2>();
-    auto mx3_part21 = mx3.partition<2, 0, 2, 2>();
-    auto mx3_part22 = mx3.partition<2, 2, 2, 2>();
+    auto& mx3_part11 = mx3.partition<2, 2, 0, 0>();
+    auto& mx3_part12 = mx3.partition<2, 2, 0, 2>();
+    auto& mx3_part21 = mx3.partition<2, 2, 2, 0>();
+    auto& mx3_part22 = mx3.partition<2, 2, 2, 2>();
 
     mul(mx1, mx2, mx3);
 
     matrix<double, 4, 4> mx4;
 
-    auto mx4_part11 = mx4.partition<0, 0, 2, 2>();
-    auto mx4_part12 = mx4.partition<0, 2, 2, 2>();
-    auto mx4_part21 = mx4.partition<2, 0, 2, 2>();
-    auto mx4_part22 = mx4.partition<2, 2, 2, 2>();
+    auto& mx4_part11 = mx4.partition<2, 2, 0, 0>();
+    auto& mx4_part12 = mx4.partition<2, 2, 0, 2>();
+    auto& mx4_part21 = mx4.partition<2, 2, 2, 0>();
+    auto& mx4_part22 = mx4.partition<2, 2, 2, 2>();
 
     matrix<double, 2, 2> mx_tmp1;
     matrix<double, 2, 2> mx_tmp2;
