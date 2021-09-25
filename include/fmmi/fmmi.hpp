@@ -10,20 +10,12 @@ template <typename T, uint16_t m, uint16_t n, uint16_t p,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
           uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-//inline __attribute__((always_inline))
+inline
 void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
               const matrix<T, n, p, y0_b, x0_b, stride_b>& b,
               matrix<T, m, p, y0_c, x0_c, stride_c>& c)
 {
-    if constexpr (m == 1 && n == 1 && p == 1)
-    {
-        c(0, 0) = a(0, 0) * b(0, 0);
-    }
-    else if constexpr (m == 1 || n == 1 || p == 1)
-    {
-        mul(a, b, c);
-    }
-    else if constexpr (m == 2 && n == 2 && p == 2)
+    if constexpr (m == 2 && n == 2 && p == 2)
     {
         const auto p1 = (a(0, 0) + a(1, 1)) * (b(0, 0) + b(1, 1));
         const auto p2 = (a(1, 0) + a(1, 1)) * b(0, 0);
@@ -59,8 +51,8 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
         auto& c10 = c.template partition<mh, ph, mh, 0>();
         auto& c11 = c.template partition<mh, ph, mh, ph>();
 
-        static matrix<T, mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
-        static matrix<T, nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
+        matrix<T, mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
+        matrix<T, nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
 
         for (uint16_t i = 0; i < nh; ++i)
         {
@@ -82,7 +74,7 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
             }
         }
 
-        static matrix<T, mh, ph> p1, p2, p3, p4, p5, p6, p7;
+        matrix<T, mh, ph> p1, p2, p3, p4, p5, p6, p7;
         mul_fast(tmp1, tmp6, p1);
         mul_fast(tmp2, b00, p2);
         mul_fast(a00, tmp7, p3);
@@ -104,36 +96,64 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
     }
     else if constexpr ((m % 2) == 1)
     {
-        const auto& a0 = a.template partition<1, n, 0, 0>();
-        const auto& a1 = a.template partition<m - 1, n, 1, 0>();
-        auto& c0 = c.template partition<1, p, 0, 0>();
-        auto& c1 = c.template partition<m - 1, p, 1, 0>();
+        if constexpr (m != 1)
+        {
+            const auto& a1 = a.template partition<m - 1, n, 1, 0>();
+            auto& c1 = c.template partition<m - 1, p, 1, 0>();
+            mul_fast(a1, b, c1);
+        }
 
-        mul_fast(a0, b, c0);
-        mul_fast(a1, b, c1);
+        const auto& a0 = a.template partition<1, n>();
+        auto& c0 = c.template partition<1, p>();
+        for (uint16_t j = 0; j < p; ++j)
+        {
+            T sum{};
+            for (uint16_t k = 0; k < n; ++k)
+            {
+                sum += a0(0, k) * b(k, j);
+            }
+            c0(0, j) = sum;
+        }
     }
     else if constexpr ((p % 2) == 1)
     {
-        const auto& b0 = b.template partition<n, 1, 0, 0>();
-        const auto& b1 = b.template partition<n, p - 1, 0, 1>();
-        auto& c0 = c.template partition<m, 1, 0, 0>();
-        auto& c1 = c.template partition<m, p - 1, 0, 1>();
+        if constexpr (p != 1)
+        {
+            const auto& b1 = b.template partition<n, p - 1, 0, 1>();
+            auto& c1 = c.template partition<m, p - 1, 0, 1>();
+            mul_fast(a, b1, c1);
+        }
 
-        mul_fast(a, b0, c0);
-        mul_fast(a, b1, c1);
+        const auto& b0 = b.template partition<n, 1>();
+        auto& c0 = c.template partition<m, 1>();
+        for (uint16_t i = 0; i < m; ++i)
+        {
+            T sum{};
+            for (uint16_t k = 0; k < n; ++k)
+            {
+                sum += a(i, k) * b0(k, 0);
+            }
+            c0(i, 0) = sum;
+        }
     }
-    else // if constexpr ((n % 2) == 1)
+    else /// (n % 2) == 1
     {
-        const auto& a0 = a.template partition<m, 1, 0, 0>();
-        const auto& a1 = a.template partition<m, n - 1, 0, 1>();
-        const auto& b0 = b.template partition<1, p, 0, 0>();
-        const auto& b1 = b.template partition<n - 1, p, 1, 0>();
+        if constexpr (n != 1)
+        {
+            const auto& a1 = a.template partition<m, n - 1, 0, 1>();
+            const auto& b1 = b.template partition<n - 1, p, 1, 0>();
+            mul_fast(a1, b1, c);
+        }
 
-        matrix<T, m, p> tmp1;
-        mul(a0, b0, tmp1);
-
-        mul_fast(a1, b1, c);
-        add(c, tmp1, c);
+        const auto& a0 = a.template partition<m, 1>();
+        const auto& b0 = b.template partition<1, p>();
+        for (uint16_t i = 0; i < m; ++i)
+        {
+            for (uint16_t j = 0; j < p; ++j)
+            {
+                c(i, j) += a0(i, 0) * b0(0, j);
+            }
+        }
     }
 }
 
