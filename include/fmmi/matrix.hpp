@@ -33,6 +33,36 @@ constexpr std::size_t padded_size(uint16_t height, uint16_t width)
 
 
 template <typename T, uint16_t height, uint16_t width,
+          uint16_t y0, uint16_t x0, uint16_t stride>
+struct matrix;
+
+
+template <uint16_t height, uint16_t width,
+          uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
+using i16mx_t = matrix<int16_t, height, width, y0, x0, stride>;
+
+
+template <uint16_t height, uint16_t width,
+          uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
+using i32mx_t = matrix<int32_t, height, width, y0, x0, stride>;
+
+
+template <uint16_t height, uint16_t width,
+          uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
+using i64mx_t = matrix<int64_t, height, width, y0, x0, stride>;
+
+
+template <uint16_t height, uint16_t width,
+          uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
+using f32mx_t = matrix<float, height, width, y0, x0, stride>;
+
+
+template <uint16_t height, uint16_t width,
+          uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
+using f64mx_t = matrix<double, height, width, y0, x0, stride>;
+
+
+template <typename T, uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
 struct matrix
 {

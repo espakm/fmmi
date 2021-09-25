@@ -319,185 +319,124 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
 }
 
 
-TEST_CASE("fmmi mul_fast benchmark")
+static constexpr uint16_t S = 256;
+static i16mx_t<S, S> i16mx_1, i16mx_2, i16mx_3;
+static i32mx_t<S, S> i32mx_1, i32mx_2, i32mx_3;
+static i64mx_t<S, S> i64mx_1, i64mx_2, i64mx_3;
+static f32mx_t<S, S> f32mx_1, f32mx_2, f32mx_3;
+static f64mx_t<S, S> f64mx_1, f64mx_2, f64mx_3;
+
+struct static_init
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(-200, +200);
-
-    constexpr uint16_t s = 256;
-    matrix<double, s, s> mx1, mx2, mx3;
-
-    for (uint16_t i = 0; i < s; ++i)
+    static_init()
     {
-        for (uint16_t j = 0; j < s; ++j)
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(-200, +200);
+
+        for (uint16_t i = 0; i < S; ++i)
         {
-            mx1(i, j) = distrib(gen);
-            mx2(i, j) = distrib(gen);
+            for (uint16_t j = 0; j < S; ++j)
+            {
+                i16mx_1(i, j) = distrib(gen);
+                i16mx_2(i, j) = distrib(gen);
+                i32mx_1(i, j) = distrib(gen);
+                i32mx_2(i, j) = distrib(gen);
+                i64mx_1(i, j) = distrib(gen);
+                i64mx_2(i, j) = distrib(gen);
+                f32mx_1(i, j) = distrib(gen);
+                f32mx_2(i, j) = distrib(gen);
+                f64mx_1(i, j) = distrib(gen);
+                f64mx_2(i, j) = distrib(gen);
+            }
         }
     }
-
-    SECTION("2x2")
-    {
-        constexpr uint16_t n = 2;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
-
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
-
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-
-    SECTION("4x4")
-    {
-        constexpr uint16_t n = 4;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
-
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
-
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-
-    SECTION("8x8")
-    {
-        constexpr uint16_t n = 8;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
-
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
-
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-
-    SECTION("16x16")
-    {
-        constexpr uint16_t n = 16;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
-
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
-
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-}
+} static_init;
 
 
-TEST_CASE("fmmi mul_fast benchmark int")
+TEMPLATE_TEST_CASE_SIG("fmmi mul_fast benchmark int16_t", "",
+                       ((uint16_t m, uint16_t n, uint16_t p), m, n, p),
+                       (1, 1, 1),
+                       (2, 2, 2),
+                       (4, 4, 4),
+                       (8, 8, 8),
+                       (16, 16, 16),
+                       (32, 32, 32),
+                       (64, 64, 64),
+                       (128, 128, 128),
+                       (255, 255, 255),
+                       (256, 256, 256)
+//                       (512, 512, 512),
+//                       (1024, 1024, 1024)
+                       )
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(-200, +200);
+    const auto& i16mx_a = i16mx_1.partition<m, n>();
+    const auto& i16mx_b = i16mx_2.partition<n, p>();
+    auto& i16mx_c = i16mx_3.partition<m, p>();
 
-    constexpr uint16_t s = 256;
-    matrix<int, s, s> mx1, mx2, mx3;
-
-    for (uint16_t i = 0; i < s; ++i)
+    BENCHMARK("i16 mul")
     {
-        for (uint16_t j = 0; j < s; ++j)
-        {
-            mx1(i, j) = distrib(gen);
-            mx2(i, j) = distrib(gen);
-        }
-    }
+        mul(i16mx_a, i16mx_b, i16mx_c);
+    };
 
-    SECTION("2x2")
+    BENCHMARK("i16 mul_fast")
     {
-        constexpr uint16_t n = 2;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
+        mul_fast(i16mx_a, i16mx_b, i16mx_c);
+    };
 
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
+    const auto& i32mx_a = i32mx_1.partition<m, n>();
+    const auto& i32mx_b = i32mx_2.partition<n, p>();
+    auto& i32mx_c = i32mx_3.partition<m, p>();
 
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-
-    SECTION("4x4")
+    BENCHMARK("i32 mul")
     {
-        constexpr uint16_t n = 4;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
+        mul(i32mx_a, i32mx_b, i32mx_c);
+    };
 
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
-
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-
-    SECTION("8x8")
+    BENCHMARK("i32 mul_fast")
     {
-        constexpr uint16_t n = 8;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
+        mul_fast(i32mx_a, i32mx_b, i32mx_c);
+    };
 
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
+    const auto& i64mx_a = i64mx_1.partition<m, n>();
+    const auto& i64mx_b = i64mx_2.partition<n, p>();
+    auto& i64mx_c = i64mx_3.partition<m, p>();
 
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
-
-    SECTION("16x16")
+    BENCHMARK("i64 mul")
     {
-        constexpr uint16_t n = 16;
-        const auto& a = mx1.partition<n, n>();
-        const auto& b = mx2.partition<n, n>();
-        auto& c = mx3.partition<n, n>();
+        mul(i64mx_a, i64mx_b, i64mx_c);
+    };
 
-        BENCHMARK("mul")
-        {
-            mul(a, b, c);
-        };
+    BENCHMARK("i64 mul_fast")
+    {
+        mul_fast(i64mx_a, i64mx_b, i64mx_c);
+    };
 
-        BENCHMARK("mul_fast")
-        {
-            mul_fast(a, b, c);
-        };
-    }
+    const auto& f32mx_a = f32mx_1.partition<m, n>();
+    const auto& f32mx_b = f32mx_2.partition<n, p>();
+    auto& f32mx_c = f32mx_3.partition<m, p>();
+
+    BENCHMARK("f32 mul")
+    {
+        mul(f32mx_a, f32mx_b, f32mx_c);
+    };
+
+    BENCHMARK("f32 mul_fast")
+    {
+        mul_fast(f32mx_a, f32mx_b, f32mx_c);
+    };
+
+    const auto& f64mx_a = f64mx_1.partition<m, n>();
+    const auto& f64mx_b = f64mx_2.partition<n, p>();
+    auto& f64mx_c = f64mx_3.partition<m, p>();
+
+    BENCHMARK("f64 mul")
+    {
+        mul(f64mx_a, f64mx_b, f64mx_c);
+    };
+
+    BENCHMARK("f64 mul_fast")
+    {
+        mul_fast(f64mx_a, f64mx_b, f64mx_c);
+    };
 }
