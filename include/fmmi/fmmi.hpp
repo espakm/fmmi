@@ -138,20 +138,31 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
     }
     else /// (n % 2) == 1
     {
+        const auto& a0 = a.template partition<m, 1>();
+        const auto& b0 = b.template partition<1, p>();
+
         if constexpr (n != 1)
         {
             const auto& a1 = a.template partition<m, n - 1, 0, 1>();
             const auto& b1 = b.template partition<n - 1, p, 1, 0>();
             mul_fast(a1, b1, c);
-        }
 
-        const auto& a0 = a.template partition<m, 1>();
-        const auto& b0 = b.template partition<1, p>();
-        for (uint16_t i = 0; i < m; ++i)
-        {
-            for (uint16_t j = 0; j < p; ++j)
+            for (uint16_t i = 0; i < m; ++i)
             {
-                c(i, j) += a0(i, 0) * b0(0, j);
+                for (uint16_t j = 0; j < p; ++j)
+                {
+                    c(i, j) += a0(i, 0) * b0(0, j);
+                }
+            }
+        }
+        else
+        {
+            for (uint16_t i = 0; i < m; ++i)
+            {
+                for (uint16_t j = 0; j < p; ++j)
+                {
+                    c(i, j) = a0(i, 0) * b0(0, j);
+                }
             }
         }
     }
