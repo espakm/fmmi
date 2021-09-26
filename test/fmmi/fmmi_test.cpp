@@ -7,7 +7,7 @@
 
 using namespace fmmi;
 
-TEST_CASE("fmmi mul_fast")
+TEST_CASE("fmmi mul_fast", "[fmmi][mul_fast][equals]")
 {
     matrix<double, 6, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
@@ -70,7 +70,7 @@ TEST_CASE("fmmi mul_fast")
 }
 
 
-TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
+TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[fmmi][mul_fast][equals]",
                        ((uint16_t m, uint16_t n, uint16_t p), m, n, p),
                        (1, 1, 1),
                        (1, 1, 2),
@@ -319,7 +319,7 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast up to 6x6", "[template][product][nttp]",
 }
 
 
-static constexpr uint16_t S = 256;
+static constexpr uint16_t S = 4096;
 static i16mx_t<S, S> i16mx_1, i16mx_2, i16mx_3;
 static i32mx_t<S, S> i32mx_1, i32mx_2, i32mx_3;
 static i64mx_t<S, S> i64mx_1, i64mx_2, i64mx_3;
@@ -354,17 +354,23 @@ struct static_init
 } static_init;
 
 
-TEMPLATE_TEST_CASE_SIG("fmmi mul_fast benchmark int16_t", "",
+TEMPLATE_TEST_CASE_SIG("fmmi mul_fast benchmark", "[fmmi][mul_fast][benchmark]",
                        ((uint16_t m, uint16_t n, uint16_t p), m, n, p),
                        (1, 1, 1),
                        (2, 2, 2),
+                       (3, 3, 3),
                        (4, 4, 4),
+                       (7, 7, 7),
                        (8, 8, 8),
+                       (15, 15, 15),
                        (16, 16, 16),
+                       (31, 31, 31),
                        (32, 32, 32),
-                       (64, 64, 64),
-                       (128, 128, 128)
-//                       (255, 255, 255),
+                       (63, 63, 63),
+                       (64, 64, 64)
+//                       (127, 127, 127),
+//                       (128, 128, 128)
+//                       (255, 255, 255)
 //                       (256, 256, 256)
 //                       (512, 512, 512),
 //                       (1024, 1024, 1024)
