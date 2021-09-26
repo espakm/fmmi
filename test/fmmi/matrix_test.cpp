@@ -1,6 +1,5 @@
 #include <catch.hpp>
-
-#include "fmmi/matrix.hpp"
+#include <fmmi/matrix.hpp>
 
 using namespace fmmi;
 

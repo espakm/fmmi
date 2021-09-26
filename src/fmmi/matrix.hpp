@@ -34,7 +34,7 @@ constexpr std::size_t padded_size(uint16_t height, uint16_t width)
 
 template <typename T, uint16_t height, uint16_t width,
           uint16_t y0, uint16_t x0, uint16_t stride>
-struct matrix;
+class matrix;
 
 
 template <uint16_t height, uint16_t width,
@@ -64,8 +64,9 @@ using f64mx_t = matrix<double, height, width, y0, x0, stride>;
 
 template <typename T, uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-struct matrix
+class matrix
 {
+public:
     matrix();
 
     matrix(std::initializer_list<T> init_list);

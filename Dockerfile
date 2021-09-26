@@ -9,6 +9,6 @@ COPY . /fmmi/
 RUN mkdir -p /fmmi/build \
  && cd /fmmi/build \
  && cmake .. \
- && make -j4
+ && make
 
-CMD /fmmi/build/test/doctest
+CMD /fmmi/build/test/test

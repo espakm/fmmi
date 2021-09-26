@@ -2,4 +2,5 @@
 /.gitignore
 /build
 /CMakeLists.txt.user*
-/.dockerfile
+/.dockerignore
+/Dockerfile

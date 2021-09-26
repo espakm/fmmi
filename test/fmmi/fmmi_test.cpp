@@ -3,7 +3,7 @@
 
 #include <random>
 
-#include "fmmi/fmmi.hpp"
+#include <fmmi/fmmi.hpp>
 
 using namespace fmmi;
 
@@ -363,9 +363,9 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast benchmark int16_t", "",
                        (16, 16, 16),
                        (32, 32, 32),
                        (64, 64, 64),
-                       (128, 128, 128),
-                       (255, 255, 255),
-                       (256, 256, 256)
+                       (128, 128, 128)
+//                       (255, 255, 255),
+//                       (256, 256, 256)
 //                       (512, 512, 512),
 //                       (1024, 1024, 1024)
                        )
