@@ -98,6 +98,9 @@ public:
     friend class matrix;
 
 private:
+    static constexpr
+    std::size_t offset_ = y0 * stride + x0;
+
     T data_[height * width];
 };
 
@@ -113,7 +116,7 @@ matrix<T, height, width, y0, x0, stride>::matrix(std::initializer_list<T> init_l
     : data_{}
 {
     auto it_init = std::begin(init_list);
-    auto it_data = &data_[y0 * stride + x0];
+    auto it_data = &data_[offset_];
     for (uint16_t y = 0; y < height; ++y)
     {
         std::copy_n(it_init, width, it_data);
@@ -127,7 +130,7 @@ template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0,
 inline
 T matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x) const
 {
-    return data_[(y0 + y) * stride + x0 + x];
+    return data_[offset_ + y * stride + x];
 }
 
 
@@ -135,7 +138,7 @@ template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0,
 inline
 T& matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x)
 {
-    return data_[(y0 + y) * stride + x0 + x];
+    return data_[offset_ + y * stride + x];
 }
 
 
@@ -163,16 +166,16 @@ bool matrix<T, height, width, y0, x0, stride>::operator==(const matrix<T, height
 {
     if constexpr (width == stride && width == other_stride)
     {
-        return std::equal(&data_[y0 * stride + x0],
-                          &data_[y0 * stride + x0 + height * width],
-                          &other.data_[other_y0 * other_stride + other_x0]);
+        return std::equal(&data_[offset_],
+                          &data_[offset_ + height * width],
+                          &other.data_[other.offset_]);
     }
 
     for (uint16_t y = 0; y < height; ++y)
     {
-        if (!std::equal(&data_[(y0 + y) * stride + x0],
-                        &data_[(y0 + y) * stride + x0 + width],
-                        &other.data_[(other_y0 + y) * other_stride + other_x0]))
+        if (!std::equal(&data_[offset_ + y * stride],
+                        &data_[offset_ + y * stride + width],
+                        &other.data_[other.offset_ + y * other_stride]))
         {
             return false;
         }
