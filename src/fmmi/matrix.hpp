@@ -72,7 +72,7 @@ public:
     matrix(std::initializer_list<T> init_list);
 
     inline
-    T operator()(uint16_t y, uint16_t x) const;
+    const T& operator()(uint16_t y, uint16_t x) const;
 
     inline
     T& operator()(uint16_t y, uint16_t x);
@@ -128,7 +128,7 @@ matrix<T, height, width, y0, x0, stride>::matrix(std::initializer_list<T> init_l
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 inline
-T matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x) const
+const T& matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x) const
 {
     return data_[offset_ + y * stride + x];
 }
