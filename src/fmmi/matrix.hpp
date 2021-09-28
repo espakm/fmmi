@@ -94,9 +94,6 @@ public:
     template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
     bool operator!=(const matrix<T, height, width, other_y0, other_x0, other_stride>& other) const;
 
-    template <typename, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t>
-    friend class matrix;
-
 private:
     static constexpr
     std::size_t offset_ = y0 * stride + x0;
@@ -166,16 +163,12 @@ bool matrix<T, height, width, y0, x0, stride>::operator==(const matrix<T, height
 {
     if constexpr (width == stride && width == other_stride)
     {
-        return std::equal(&data_[offset_],
-                          &data_[offset_ + height * width],
-                          &other.data_[other.offset_]);
+        return std::equal(&(*this)(0, 0), &(*this)(height, 0), &other(0, 0));
     }
 
     for (uint16_t y = 0; y < height; ++y)
     {
-        if (!std::equal(&data_[offset_ + y * stride],
-                        &data_[offset_ + y * stride + width],
-                        &other.data_[other.offset_ + y * other_stride]))
+        if (!std::equal(&(*this)(y, 0), &(*this)(y, width), &other(y, 0)))
         {
             return false;
         }
