@@ -146,25 +146,84 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
             const auto& a1 = a.template partition<m, n - 1, 0, 1>();
             const auto& b1 = b.template partition<n - 1, p, 1, 0>();
             mul_fast(a1, b1, c);
+        }
 
-            for (uint16_t i = 0; i < m; ++i)
-            {
-                for (uint16_t j = 0; j < p; ++j)
-                {
-                    c(i, j) += a0(i, 0) * b0(0, j);
-                }
-            }
-        }
-        else
+        for (uint16_t i = 0; i < m; ++i)
         {
-            for (uint16_t i = 0; i < m; ++i)
+            for (uint16_t j = 0; j < p; ++j)
             {
-                for (uint16_t j = 0; j < p; ++j)
-                {
-                    c(i, j) = a0(i, 0) * b0(0, j);
-                }
+                c(i, j) += a0(i, 0) * b0(0, j);
             }
         }
+    }
+}
+
+
+template <typename T, uint16_t m,
+          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
+          uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
+inline
+void inv_fast(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
+              matrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
+{
+    if constexpr (m == 1)
+    {
+        ainv(0, 0) = 1 / a(0, 0);
+    }
+    else if constexpr (m == 2)
+    {
+        const T coeff = 1.0 / (a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0));
+        ainv(0, 0) = a(1, 1) * coeff;
+        ainv(0, 1) = -a(0, 1) * coeff;
+        ainv(1, 0) = -a(1, 0) * coeff;
+        ainv(1, 1) = a(0, 0) * coeff;
+    }
+    else if constexpr ((m % 2) == 0)
+    {
+        constexpr uint16_t mh = m / 2;
+
+        const auto& a00 = a.template partition<mh, mh, 0, 0>();
+        const auto& a01 = a.template partition<mh, mh, 0, mh>();
+        const auto& a10 = a.template partition<mh, mh, mh, 0>();
+        const auto& a11 = a.template partition<mh, mh, mh, mh>();
+
+        auto& ainv00 = ainv.template partition<mh, mh, 0, 0>();
+        auto& ainv01 = ainv.template partition<mh, mh, 0, mh>();
+        auto& ainv10 = ainv.template partition<mh, mh, mh, 0>();
+        auto& ainv11 = ainv.template partition<mh, mh, mh, mh>();
+
+        matrix<T, mh, mh> a00inv;
+        inv_fast(a00, a00inv);
+
+        matrix<T, mh, mh> a10_a00inv, a10_a00inv_a01, s;
+        mul_fast(a10, a00inv, a10_a00inv);
+        mul_fast(a10_a00inv, a01, a10_a00inv_a01);
+        sub(a11, a10_a00inv_a01, s);
+        inv_fast(s, ainv11);
+        const auto& sinv = ainv11;
+
+        matrix<T, mh, mh> a00inv_a01;
+        mul_fast(a00inv, a01, a00inv_a01);
+        matrix<T, mh, mh> a00inv_a01_sinv;
+        mul_fast(a00inv_a01, sinv, a00inv_a01_sinv);
+        matrix<T, mh, mh> a00inv_a01_sinv_a10_a00inv;
+        mul_fast(a00inv_a01_sinv, a10_a00inv, a00inv_a01_sinv_a10_a00inv);
+        add(a00inv, a00inv_a01_sinv_a10_a00inv, ainv00);
+
+        matrix<T, mh, mh> zero{};
+        sub(zero, a00inv_a01_sinv, ainv01);
+
+        matrix<T, mh, mh> sinv_a10_a00inv;
+        mul_fast(sinv, a10_a00inv, sinv_a10_a00inv);
+        sub(zero, sinv_a10_a00inv, ainv10);
+    }
+    else
+    {
+        const auto& a00 = a.template partition<1, 1, 0, 0>();
+        const auto& a01 = a.template partition<1, m - 1, 0, 1>();
+        const auto& a10 = a.template partition<m - 1, 1, 1, 0>();
+        const auto& a11 = a.template partition<m - 1, m - 1, 1, 1>();
+        throw "not implemented";
     }
 }
 

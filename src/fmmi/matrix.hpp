@@ -94,6 +94,12 @@ public:
     template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
     bool operator!=(const matrix<T, height, width, other_y0, other_x0, other_stride>& other) const;
 
+    template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
+    bool equals(const matrix<T, height, width, other_y0, other_x0, other_stride>& other, double margin = 0.0) const;
+
+    static
+    matrix<T, height, width> identity();
+
 private:
     static constexpr
     std::size_t offset_ = y0 * stride + x0;
@@ -104,6 +110,7 @@ private:
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 matrix<T, height, width, y0, x0, stride>::matrix()
+    : data_{}
 {
 }
 
@@ -112,13 +119,24 @@ template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0,
 matrix<T, height, width, y0, x0, stride>::matrix(std::initializer_list<T> init_list)
     : data_{}
 {
-    auto it_init = std::begin(init_list);
     auto it_data = &data_[offset_];
-    for (uint16_t y = 0; y < height; ++y)
+    if (init_list.size() == 0)
     {
-        std::copy_n(it_init, width, it_data);
-        it_init += width;
-        it_data += stride;
+        for (uint16_t y = 0; y < height; ++y)
+        {
+            std::fill_n(it_data, width, 0);
+            it_data += stride;
+        }
+    }
+    else
+    {
+        auto it_init = std::begin(init_list);
+        for (uint16_t y = 0; y < height; ++y)
+        {
+            std::copy_n(it_init, width, it_data);
+            it_init += width;
+            it_data += stride;
+        }
     }
 }
 
@@ -186,6 +204,42 @@ bool matrix<T, height, width, y0, x0, stride>::operator!=(const matrix<T, height
 }
 
 
+template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
+template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
+bool matrix<T, height, width, y0, x0, stride>::equals(
+        const matrix<T, height, width, other_y0, other_x0, other_stride>& other,
+        double margin) const
+{
+    for (uint16_t y = 0; y < height; ++y)
+    {
+        for (uint16_t x = 0; x < width; ++x)
+        {
+            if (std::abs((*this)(y, x) - other(y, x)) > margin)
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
+matrix<T, height, width> matrix<T, height, width, y0, x0, stride>::identity()
+{
+    matrix<T, height, width> ident;
+    for (uint16_t y = 0; y < height; ++y)
+    {
+        for (uint16_t x = 0; x < width; ++x)
+        {
+            ident(y, x) = y == x ? 1 : 0;
+        }
+    }
+    return ident;
+}
+
+
 template <typename T, uint16_t m, uint16_t n,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
@@ -240,6 +294,22 @@ void mul(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
                 sum += a(i, k) * b(k, j);
             }
             c(i, j) = sum;
+        }
+    }
+}
+
+
+template <typename T, uint16_t m, uint16_t n,
+          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
+          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
+void transpose(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         matrix<T, n, m, y0_b, x0_b, stride_b>& b)
+{
+    for (uint16_t i = 0; i < m; ++i)
+    {
+        for (uint16_t j = 0; j < n; ++j)
+        {
+            b(j, i) = a(i, j);
         }
     }
 }

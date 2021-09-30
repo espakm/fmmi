@@ -1,6 +1,8 @@
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch.hpp>
 
+#include <iomanip>
+#include <iostream>
 #include <random>
 
 #include <fmmi/fmmi.hpp>
@@ -137,16 +139,16 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast benchmark", "[fmmi][mul_fast][benchmark]",
                        (2, 2, 2),
                        (3, 3, 3),
                        (4, 4, 4),
-//                       (7, 7, 7),
-//                       (8, 8, 8),
-//                       (15, 15, 15),
-//                       (16, 16, 16),
-//                       (31, 31, 31),
-//                       (32, 32, 32),
-//                       (63, 63, 63),
-//                       (64, 64, 64)
-                       (127, 127, 127),
-                       (128, 128, 128)
+                       (7, 7, 7),
+                       (8, 8, 8),
+                       (15, 15, 15),
+                       (16, 16, 16),
+                       (31, 31, 31),
+                       (32, 32, 32),
+                       (63, 63, 63),
+                       (64, 64, 64)
+//                       (127, 127, 127),
+//                       (128, 128, 128)
 //                       (255, 255, 255)
 //                       (256, 256, 256)
 //                       (512, 512, 512),
@@ -222,4 +224,79 @@ TEMPLATE_TEST_CASE_SIG("fmmi mul_fast benchmark", "[fmmi][mul_fast][benchmark]",
     {
         mul_fast(f64mx_a, f64mx_b, f64mx_c);
     };
+}
+
+
+TEST_CASE("inv_fast", "[inverse]")
+{
+    f32mx_t<1, 1> a{
+        5,
+    };
+
+    f32mx_t<1, 1> expected_a_inv{
+        0.2,
+    };
+
+    f32mx_t<1, 1> identity1x1 = f32mx_t<1, 1>::identity();
+    f32mx_t<1, 1> a_expected_a_inv;
+    mul(a, expected_a_inv, a_expected_a_inv);
+    CHECK(a_expected_a_inv.equals(identity1x1, 0.001));
+
+    f32mx_t<1, 1> a_inv;
+    inv_fast(a, a_inv);
+    CHECK(a_inv.equals(expected_a_inv));
+
+    f32mx_t<1, 1> a_a_inv;
+    mul(a, a_inv, a_a_inv);
+    CHECK(a_a_inv.equals(identity1x1));
+
+    f32mx_t<2, 2> b{
+        5, 6,
+        2, 2,
+    };
+
+    f32mx_t<2, 2> expected_b_inv{
+        -1, 3,
+        1, -2.5,
+    };
+
+    f32mx_t<2, 2> identity2x2 = f32mx_t<2, 2>::identity();
+    f32mx_t<2, 2> b_expected_b_inv;
+    mul(b, expected_b_inv, b_expected_b_inv);
+    CHECK(b_expected_b_inv.equals(identity2x2, 1e-7));
+
+    f32mx_t<2, 2> b_inv;
+    inv_fast(b, b_inv);
+    CHECK(b_inv.equals(expected_b_inv, 1e-7));
+
+    f32mx_t<2, 2> b_b_inv;
+    mul(b, b_inv, b_b_inv);
+    CHECK(b_b_inv.equals(identity2x2, 1e-7));
+
+    f32mx_t<4, 4> c{
+        5, 6, 6, 8,
+        2, 2, 2, 8,
+        6, 6, 2, 8,
+        2, 3, 6, 7,
+    };
+
+    f32mx_t<4, 4> expected_c_inv{
+        -17, -9, 12, 16,
+        17, 8.75, -11.75, -16,
+        -4, -2.25, 2.75, 4,
+        1, 0.75, -0.75, -1,
+    };
+
+    f32mx_t<4, 4> identity4x4 = f32mx_t<4, 4>::identity();
+    f32mx_t<4, 4> c_expected_c_inv;
+    mul(c, expected_c_inv, c_expected_c_inv);
+    CHECK(c_expected_c_inv.equals(identity4x4, 1e-7));
+
+    f32mx_t<4, 4> c_inv;
+    inv_fast(c, c_inv);
+    CHECK(c_inv.equals(expected_c_inv, 1e-7));
+
+    f32mx_t<4, 4> c_c_inv;
+    mul(c, c_inv, c_c_inv);
+    CHECK(c_c_inv.equals(identity4x4, 1e-7));
 }
