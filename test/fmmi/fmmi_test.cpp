@@ -299,4 +299,29 @@ TEST_CASE("inv_fast", "[inverse]")
     f32mx_t<4, 4> c_c_inv;
     mul(c, c_inv, c_c_inv);
     CHECK(c_c_inv.equals(identity4x4, 1e-7));
+
+    f32mx_t<3, 3> d{
+        0, -3, -2,
+        1, -4, -2,
+        -3, 4, 1,
+    };
+
+    f32mx_t<3, 3> expected_d_inv{
+        4, -5, -2,
+        5, -6, -2,
+        -8, 9, 3,
+    };
+
+    f32mx_t<3, 3> identity3x3 = f32mx_t<3, 3>::identity();
+    f32mx_t<3, 3> d_expected_d_inv;
+    mul(d, expected_d_inv, d_expected_d_inv);
+    CHECK(d_expected_d_inv.equals(identity3x3, 1e-7));
+
+    f32mx_t<3, 3> d_inv;
+    inv_fast(d, d_inv);
+    CHECK(d_inv.equals(expected_d_inv, 1e-7));
+
+    f32mx_t<3, 3> d_d_inv;
+    mul(d, d_inv, d_d_inv);
+    CHECK(d_d_inv.equals(identity3x3, 1e-7));
 }
