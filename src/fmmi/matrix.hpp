@@ -346,6 +346,72 @@ void transpose(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
     }
 }
 
+
+template <typename T, uint16_t m,
+          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
+          uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
+inline
+void inv(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
+         matrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
+{
+    if constexpr (m == 1)
+    {
+        ainv(0, 0) = 1 / a(0, 0);
+    }
+    else if constexpr (m == 2)
+    {
+        const T coeff = 1.0 / (a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0));
+        ainv(0, 0) = a(1, 1) * coeff;
+        ainv(0, 1) = -a(0, 1) * coeff;
+        ainv(1, 0) = -a(1, 0) * coeff;
+        ainv(1, 1) = a(0, 0) * coeff;
+    }
+    else
+    {
+        constexpr uint16_t n = (m % 2) == 0 ? m / 2 : 1;
+        constexpr uint16_t p = m - n;
+
+        const auto& a00 = a.template partition<n, n, 0, 0>();
+        const auto& a01 = a.template partition<n, p, 0, n>();
+        const auto& a10 = a.template partition<p, n, n, 0>();
+        const auto& a11 = a.template partition<p, p, n, n>();
+
+        auto& ainv00 = ainv.template partition<n, n, 0, 0>();
+        auto& ainv01 = ainv.template partition<n, p, 0, n>();
+        auto& ainv10 = ainv.template partition<p, n, n, 0>();
+        auto& ainv11 = ainv.template partition<p, p, n, n>();
+
+        matrix<T, m, m> tmp;
+        auto& tmp00 = tmp.template partition<n, n, 0, 0>();
+        auto& tmp01 = tmp.template partition<n, p, 0, n>();
+        auto& tmp10 = tmp.template partition<p, n, n, 0>();
+        auto& tmp11 = tmp.template partition<p, p, n, n>();
+
+        inv(a00, tmp00);
+        mul(a10, tmp00, tmp10);
+        mul(tmp10, a01, tmp11);
+        sub(a11, tmp11);
+        inv(tmp11, ainv11);
+
+        mul(tmp00, a01, tmp01);
+        mul(tmp01, ainv11, ainv01);
+
+        mul(ainv01, tmp10, ainv00);
+        add(tmp00, ainv00);
+
+        mul(ainv11, tmp10, ainv10);
+
+        for (uint16_t i = 0; i < n; ++i)
+        {
+            for (uint16_t j = 0; j < p; ++j)
+            {
+                ainv01(i, j) *= -1;
+                ainv10(j, i) *= -1;
+            }
+        }
+    }
+}
+
 }
 
 #endif
