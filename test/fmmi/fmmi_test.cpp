@@ -325,3 +325,86 @@ TEST_CASE("inv_fast", "[inverse]")
     mul(d, d_inv, d_d_inv);
     CHECK(d_d_inv.equals(identity3x3, 1e-7));
 }
+
+
+TEMPLATE_TEST_CASE_SIG("fmmi inv_fast benchmark", "[fmmi][inv_fast][benchmark]",
+                       ((uint16_t m), m),
+                       (1),
+                       (2),
+                       (4),
+                       (8),
+                       (16),
+                       (32),
+                       (64)
+//                       (128),
+//                       (256),
+//                       (512),
+//                       (1024),
+//                       (2048)
+                       )
+{
+    const auto& i16mx_a = i16mx_1.partition<m, m>();
+    auto& i16mx_b = i16mx_2.partition<m, m>();
+
+    BENCHMARK("i16 inv")
+    {
+        inv(i16mx_a, i16mx_b);
+    };
+
+    BENCHMARK("i16 inv_fast")
+    {
+        inv_fast(i16mx_a, i16mx_b);
+    };
+
+    const auto& i32mx_a = i32mx_1.partition<m, m>();
+    auto& i32mx_b = i32mx_2.partition<m, m>();
+
+    BENCHMARK("i32 inv")
+    {
+        inv(i32mx_a, i32mx_b);
+    };
+
+    BENCHMARK("i32 inv_fast")
+    {
+        inv_fast(i32mx_a, i32mx_b);
+    };
+
+    const auto& i64mx_a = i64mx_1.partition<m, m>();
+    auto& i64mx_b = i64mx_2.partition<m, m>();
+
+    BENCHMARK("i64 inv")
+    {
+        inv(i64mx_a, i64mx_b);
+    };
+
+    BENCHMARK("i64 inv_fast")
+    {
+        inv_fast(i64mx_a, i64mx_b);
+    };
+
+    const auto& f32mx_a = f32mx_1.partition<m, m>();
+    auto& f32mx_b = f32mx_2.partition<m, m>();
+
+    BENCHMARK("f32 inv")
+    {
+        inv(f32mx_a, f32mx_b);
+    };
+
+    BENCHMARK("f32 inv_fast")
+    {
+        inv_fast(f32mx_a, f32mx_b);
+    };
+
+    const auto& f64mx_a = f64mx_1.partition<m, m>();
+    auto& f64mx_b = f64mx_2.partition<m, m>();
+
+    BENCHMARK("f64 inv")
+    {
+        inv(f64mx_a, f64mx_b);
+    };
+
+    BENCHMARK("f64 inv_fast")
+    {
+        inv_fast(f64mx_a, f64mx_b);
+    };
+}
