@@ -188,81 +188,49 @@ void inv_fast(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
         ainv(1, 0) = -a(1, 0) * coeff;
         ainv(1, 1) = a(0, 0) * coeff;
     }
-    else if constexpr ((m % 2) == 0)
-    {
-        constexpr uint16_t mh = m / 2;
-
-        const auto& a00 = a.template partition<mh, mh, 0, 0>();
-        const auto& a01 = a.template partition<mh, mh, 0, mh>();
-        const auto& a10 = a.template partition<mh, mh, mh, 0>();
-        const auto& a11 = a.template partition<mh, mh, mh, mh>();
-
-        auto& ainv00 = ainv.template partition<mh, mh, 0, 0>();
-        auto& ainv01 = ainv.template partition<mh, mh, 0, mh>();
-        auto& ainv10 = ainv.template partition<mh, mh, mh, 0>();
-        auto& ainv11 = ainv.template partition<mh, mh, mh, mh>();
-
-        matrix<T, mh, mh> a00inv;
-        inv_fast(a00, a00inv);
-
-        matrix<T, mh, mh> a10_a00inv, a10_a00inv_a01, s;
-        mul_fast(a10, a00inv, a10_a00inv);
-        mul_fast(a10_a00inv, a01, a10_a00inv_a01);
-        sub(a11, a10_a00inv_a01, s);
-        inv_fast(s, ainv11);
-        const auto& sinv = ainv11;
-
-        matrix<T, mh, mh> a00inv_a01;
-        mul_fast(a00inv, a01, a00inv_a01);
-        matrix<T, mh, mh> a00inv_a01_sinv;
-        mul_fast(a00inv_a01, sinv, a00inv_a01_sinv);
-        matrix<T, mh, mh> a00inv_a01_sinv_a10_a00inv;
-        mul_fast(a00inv_a01_sinv, a10_a00inv, a00inv_a01_sinv_a10_a00inv);
-        add(a00inv, a00inv_a01_sinv_a10_a00inv, ainv00);
-
-        mul(-1.0f, a00inv_a01_sinv, ainv01);
-
-        matrix<T, mh, mh> sinv_a10_a00inv;
-        mul_fast(sinv, a10_a00inv, sinv_a10_a00inv);
-        mul(-1.0f, sinv_a10_a00inv, ainv10);
-    }
     else
     {
-        const auto& a00 = a.template partition<1, 1, 0, 0>();
-        const auto& a01 = a.template partition<1, m - 1, 0, 1>();
-        const auto& a10 = a.template partition<m - 1, 1, 1, 0>();
-        const auto& a11 = a.template partition<m - 1, m - 1, 1, 1>();
+        constexpr uint16_t n = (m % 2) == 0 ? m / 2 : 1;
+        constexpr uint16_t p = m - n;
 
-        auto& ainv00 = ainv.template partition<1, 1, 0, 0>();
-        auto& ainv01 = ainv.template partition<1, m - 1, 0, 1>();
-        auto& ainv10 = ainv.template partition<m - 1, 1, 1, 0>();
-        auto& ainv11 = ainv.template partition<m - 1, m - 1, 1, 1>();
+        const auto& a00 = a.template partition<n, n, 0, 0>();
+        const auto& a01 = a.template partition<n, p, 0, n>();
+        const auto& a10 = a.template partition<p, n, n, 0>();
+        const auto& a11 = a.template partition<p, p, n, n>();
 
-        matrix<T, 1, 1> a00inv;
-        inv_fast(a00, a00inv);
+        auto& ainv00 = ainv.template partition<n, n, 0, 0>();
+        auto& ainv01 = ainv.template partition<n, p, 0, n>();
+        auto& ainv10 = ainv.template partition<p, n, n, 0>();
+        auto& ainv11 = ainv.template partition<p, p, n, n>();
 
-        matrix<T, m - 1, 1> a10_a00inv;
-        matrix<T, m - 1, m - 1> a10_a00inv_a01;
-        matrix<T, m - 1, m - 1> s;
-        mul_fast(a10, a00inv, a10_a00inv);
-        mul_fast(a10_a00inv, a01, a10_a00inv_a01);
-        sub(a11, a10_a00inv_a01, s);
-        inv_fast(s, ainv11);
-        const auto& sinv = ainv11;
+        matrix<T, m, m> tmp;
+        auto& tmp00 = tmp.template partition<n, n, 0, 0>();
+        auto& tmp01 = tmp.template partition<n, p, 0, n>();
+        auto& tmp10 = tmp.template partition<p, n, n, 0>();
+        auto& tmp11 = tmp.template partition<p, p, n, n>();
 
-        matrix<T, 1, m - 1> a00inv_a01;
-        mul_fast(a00inv, a01, a00inv_a01);
-        matrix<T, 1, m - 1> a00inv_a01_sinv;
-        mul_fast(a00inv_a01, sinv, a00inv_a01_sinv);
-        matrix<T, 1, 1> a00inv_a01_sinv_a10_a00inv;
-        mul_fast(a00inv_a01_sinv, a10_a00inv, a00inv_a01_sinv_a10_a00inv);
-        add(a00inv, a00inv_a01_sinv_a10_a00inv, ainv00);
+        inv_fast(a00, tmp00);
+        mul_fast(a10, tmp00, tmp10);
+        mul_fast(tmp10, a01, tmp11);
+        sub(a11, tmp11);
+        inv_fast(tmp11, ainv11);
 
-        mul(-1.0f, a00inv_a01_sinv, ainv01);
+        mul_fast(tmp00, a01, tmp01);
+        mul_fast(tmp01, ainv11, ainv01);
 
-        matrix<T, m - 1, 1> sinv_a10_a00inv;
-        mul_fast(sinv, a10_a00inv, sinv_a10_a00inv);
-        mul(-1.0f, sinv_a10_a00inv, ainv10);
+        mul_fast(ainv01, tmp10, ainv00);
+        add(tmp00, ainv00);
+
+        mul_fast(ainv11, tmp10, ainv10);
+
+        for (uint16_t i = 0; i < n; ++i)
+        {
+            for (uint16_t j = 0; j < p; ++j)
+            {
+                ainv01(i, j) *= -1;
+                ainv10(j, i) *= -1;
+            }
+        }
     }
 }
 

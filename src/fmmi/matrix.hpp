@@ -276,6 +276,38 @@ void sub(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
 }
 
 
+template <typename T, uint16_t m, uint16_t n,
+          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
+          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
+void add(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         matrix<T, m, n, y0_b, x0_b, stride_b>& b)
+{
+    for (uint16_t i = 0; i < m; ++i)
+    {
+        for (uint16_t j = 0; j < n; ++j)
+        {
+            b(i, j) = a(i, j) + b(i, j);
+        }
+    }
+}
+
+
+template <typename T, uint16_t m, uint16_t n,
+          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
+          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
+void sub(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         matrix<T, m, n, y0_b, x0_b, stride_b>& b)
+{
+    for (uint16_t i = 0; i < m; ++i)
+    {
+        for (uint16_t j = 0; j < n; ++j)
+        {
+            b(i, j) = a(i, j) - b(i, j);
+        }
+    }
+}
+
+
 template <typename T, uint16_t m, uint16_t n, uint16_t p,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
@@ -294,22 +326,6 @@ void mul(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
                 sum += a(i, k) * b(k, j);
             }
             c(i, j) = sum;
-        }
-    }
-}
-
-
-template <typename T, uint16_t m, uint16_t n,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void mul(T f, const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         matrix<T, m, n, y0_b, x0_b, stride_b>& b)
-{
-    for (uint16_t i = 0; i < m; ++i)
-    {
-        for (uint16_t j = 0; j < n; ++j)
-        {
-            b(i, j)  = f * a(i, j);
         }
     }
 }
