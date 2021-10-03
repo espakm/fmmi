@@ -15,6 +15,7 @@ using i32dmx_t = dmatrix<int32_t>;
 using i64dmx_t = dmatrix<int64_t>;
 using f32dmx_t = dmatrix<float>;
 using f64dmx_t = dmatrix<double>;
+using f128dmx_t = dmatrix<long double>;
 
 
 template <typename T>

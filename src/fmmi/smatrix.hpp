@@ -62,6 +62,11 @@ template <uint16_t height, uint16_t width,
 using f64smx_t = smatrix<double, height, width, y0, x0, stride>;
 
 
+template <uint16_t height, uint16_t width,
+          uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
+using f128smx_t = smatrix<long double, height, width, y0, x0, stride>;
+
+
 template <typename T, uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
 class smatrix

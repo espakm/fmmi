@@ -79,7 +79,7 @@ TEST_CASE("smatrix ctor", "[smatrix][ctor]")
 }
 
 
-TEST_CASE("smatrix ==", "[smatrix][==]")
+TEST_CASE("smatrix ==", "[smatrix][operator==]")
 {
     smatrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,

@@ -36,7 +36,7 @@ TEST_CASE("dmatrix ctor", "[dmatrix][ctor]")
 }
 
 
-TEST_CASE("dmatrix ==", "[dmatrix][==]")
+TEST_CASE("dmatrix ==", "[dmatrix][operator==]")
 {
     dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
