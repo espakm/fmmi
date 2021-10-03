@@ -3,7 +3,7 @@
 
 using namespace fmmi;
 
-TEST_CASE("dmatrix::dmatrix()")
+TEST_CASE("dmatrix ctor", "[dmatrix][ctor]")
 {
     dmatrix<double> mx(5, 4, {
         1.0, 2.0, 3.0, 4.0,
@@ -36,7 +36,7 @@ TEST_CASE("dmatrix::dmatrix()")
 }
 
 
-TEST_CASE("dmatrix::operator==()")
+TEST_CASE("dmatrix ==", "[dmatrix][==]")
 {
     dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
@@ -60,7 +60,7 @@ TEST_CASE("dmatrix::operator==()")
 }
 
 
-TEST_CASE("dmatrix add()")
+TEST_CASE("add dmatrix", "[add][dmatrix]")
 {
     dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
@@ -85,7 +85,7 @@ TEST_CASE("dmatrix add()")
 }
 
 
-TEST_CASE("dmatrix mul()")
+TEST_CASE("mul dmatrix", "[mul][dmatrix]")
 {
     dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
@@ -109,7 +109,7 @@ TEST_CASE("dmatrix mul()")
 }
 
 
-TEST_CASE("dmatrix::partition()")
+TEST_CASE("dmatrix partition", "[dmatrix][partition]")
 {
     dmatrix<double> mx(5, 4, {
         1.0, 2.0, 3.0, 4.0,
@@ -153,7 +153,7 @@ TEST_CASE("dmatrix::partition()")
 }
 
 
-TEST_CASE("dmatrix partition addition")
+TEST_CASE("add dmatrix partition", "[add][dmatrix][partition]")
 {
     dmatrix<double> mx1(4, 6, {
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
@@ -209,7 +209,7 @@ TEST_CASE("dmatrix partition addition")
 }
 
 
-TEST_CASE("dmatrix partition multiplication")
+TEST_CASE("mul dmatrix partition", "[mul][dmatrix][partition]")
 {
     dmatrix<double> mx1(4, 6, {
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
@@ -281,7 +281,7 @@ TEST_CASE("dmatrix partition multiplication")
 }
 
 
-TEST_CASE("dmatrix inv", "[inverse]")
+TEST_CASE("inv dmatrix", "[inv][dmatrix]")
 {
     f32dmx_t a(1, 1, {
         5,

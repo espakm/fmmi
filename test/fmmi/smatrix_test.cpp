@@ -46,7 +46,7 @@ TEST_CASE("padded_size")
 }
 
 
-TEST_CASE("smatrix::smatrix()")
+TEST_CASE("smatrix ctor", "[smatrix][ctor]")
 {
     smatrix<double, 5, 4> mx{
         1.0, 2.0, 3.0, 4.0,
@@ -79,7 +79,7 @@ TEST_CASE("smatrix::smatrix()")
 }
 
 
-TEST_CASE("smatrix::operator==()")
+TEST_CASE("smatrix ==", "[smatrix][==]")
 {
     smatrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,
@@ -103,7 +103,7 @@ TEST_CASE("smatrix::operator==()")
 }
 
 
-TEST_CASE("smatrix add()")
+TEST_CASE("add smatrix", "[add][smatrix]")
 {
     smatrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,
@@ -128,7 +128,7 @@ TEST_CASE("smatrix add()")
 }
 
 
-TEST_CASE("smatrix mul()")
+TEST_CASE("mul smatrix", "[mul][smatrix]")
 {
     smatrix<double, 2, 3> mx1{
         1.0, 2.0, 3.0,
@@ -152,7 +152,7 @@ TEST_CASE("smatrix mul()")
 }
 
 
-TEST_CASE("smatrix::partition()")
+TEST_CASE("smatrix partition", "[smatrix][partition]")
 {
     smatrix<double, 5, 4> mx{
         1.0, 2.0, 3.0, 4.0,
@@ -196,7 +196,7 @@ TEST_CASE("smatrix::partition()")
 }
 
 
-TEST_CASE("smatrix partition addition")
+TEST_CASE("add smatrix partition", "[add][smatrix][partition]")
 {
     smatrix<double, 4, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
@@ -252,7 +252,7 @@ TEST_CASE("smatrix partition addition")
 }
 
 
-TEST_CASE("smatrix partition multiplication")
+TEST_CASE("mul smatrix partition", "[mul][smatrix][partition]")
 {
     smatrix<double, 4, 6> mx1{
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
@@ -324,7 +324,7 @@ TEST_CASE("smatrix partition multiplication")
 }
 
 
-TEST_CASE("smatrix inv", "[inverse]")
+TEST_CASE("inv smatrix", "[inv][smatrix]")
 {
     f32smx_t<1, 1> a{
         5,
