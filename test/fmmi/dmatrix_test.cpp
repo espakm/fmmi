@@ -1,60 +1,17 @@
 #include <catch.hpp>
-#include <fmmi/matrix.hpp>
+#include <fmmi/dmatrix.hpp>
 
 using namespace fmmi;
 
-TEST_CASE("log_2")
+TEST_CASE("dmatrix::dmatrix()")
 {
-    CHECK(log_2(1) == 0);
-    CHECK(log_2(2) == 1);
-    CHECK(log_2(3) == 1);
-    CHECK(log_2(4) == 2);
-    CHECK(log_2(5) == 2);
-    CHECK(log_2(6) == 2);
-    CHECK(log_2(7) == 2);
-    CHECK(log_2(8) == 3);
-    CHECK(log_2(9) == 3);
-}
-
-
-TEST_CASE("exp_2")
-{
-    CHECK(exp_2(0) == 1);
-    CHECK(exp_2(1) == 2);
-    CHECK(exp_2(2) == 4);
-    CHECK(exp_2(3) == 8);
-    CHECK(exp_2(4) == 16);
-    CHECK(exp_2(5) == 32);
-}
-
-
-TEST_CASE("padded_size")
-{
-    CHECK(padded_size(1) == 1);
-    CHECK(padded_size(2) == 2);
-    CHECK(padded_size(3) == 4);
-    CHECK(padded_size(4) == 4);
-    CHECK(padded_size(5) == 8);
-    CHECK(padded_size(6) == 8);
-    CHECK(padded_size(7) == 8);
-    CHECK(padded_size(8) == 8);
-    CHECK(padded_size(9) == 16);
-
-    CHECK(padded_size(3, 4) == 4 * 4);
-    CHECK(padded_size(3, 5) == 8 * 8);
-    CHECK(padded_size(5, 3) == 8 * 8);
-}
-
-
-TEST_CASE("matrix::matrix()")
-{
-    matrix<double, 5, 4> mx{
+    dmatrix<double> mx(5, 4, {
         1.0, 2.0, 3.0, 4.0,
         5.0, 6.0, 7.0, 8.0,
         9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0,
         17.0, 18.0, 19.0, 20.0,
-    };
+    });
 
     CHECK(mx(0, 0) == 1.0);
     CHECK(mx(0, 1) == 2.0);
@@ -79,17 +36,17 @@ TEST_CASE("matrix::matrix()")
 }
 
 
-TEST_CASE("matrix::operator==()")
+TEST_CASE("dmatrix::operator==()")
 {
-    matrix<double, 2, 3> mx1{
+    dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
-    };
+    });
 
-    matrix<double, 2, 3> mx2{
+    dmatrix<double> mx2(2, 3, {
         1.0, 2.0, 3.0,
         5.0, 6.0, 7.0,
-    };
+    });
 
     CHECK(mx1 == mx1);
 
@@ -103,19 +60,19 @@ TEST_CASE("matrix::operator==()")
 }
 
 
-TEST_CASE("matrix add()")
+TEST_CASE("dmatrix add()")
 {
-    matrix<double, 2, 3> mx1{
+    dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
-    };
+    });
 
-    matrix<double, 2, 3> mx2{
+    dmatrix<double> mx2(2, 3, {
         10.0, 11.0, 12.0,
         20.0, 21.0, 22.0,
-    };
+    });
 
-    matrix<double, 2, 3> mx3;
+    dmatrix<double> mx3(2, 3);
 
     add(mx1, mx2, mx3);
 
@@ -128,20 +85,20 @@ TEST_CASE("matrix add()")
 }
 
 
-TEST_CASE("matrix mul()")
+TEST_CASE("dmatrix mul()")
 {
-    matrix<double, 2, 3> mx1{
+    dmatrix<double> mx1(2, 3, {
         1.0, 2.0, 3.0,
         4.0, 5.0, 6.0,
-    };
+    });
 
-    matrix<double, 3, 2> mx2{
+    dmatrix<double> mx2(3, 2, {
         10.0, 11.0,
         20.0, 21.0,
         30.0, 31.0,
-    };
+    });
 
-    matrix<double, 2, 2> mx3;
+    dmatrix<double> mx3(2, 2);
 
     mul(mx1, mx2, mx3);
 
@@ -152,42 +109,42 @@ TEST_CASE("matrix mul()")
 }
 
 
-TEST_CASE("matrix::partition()")
+TEST_CASE("dmatrix::partition()")
 {
-    matrix<double, 5, 4> mx{
+    dmatrix<double> mx(5, 4, {
         1.0, 2.0, 3.0, 4.0,
         5.0, 6.0, 7.0, 8.0,
         9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0,
         17.0, 18.0, 19.0, 20.0,
-    };
+    });
 
-    matrix<double, 2, 3> mx11{
+    dmatrix<double> mx11(2, 3, {
         1.0, 2.0, 3.0,
         5.0, 6.0, 7.0,
-    };
+    });
 
-    matrix<double, 2, 1> mx12{
+    dmatrix<double> mx12(2, 1, {
         4.0,
         8.0,
-    };
+    });
 
-    matrix<double, 3, 1> mx21{
+    dmatrix<double> mx21(3, 1, {
         9.0,
         13.0,
         17.0,
-    };
+    });
 
-    matrix<double, 3, 3> mx22{
+    dmatrix<double> mx22(3, 3, {
         10.0, 11.0, 12.0,
         14.0, 15.0, 16.0,
         18.0, 19.0, 20.0,
-    };
+    });
 
-    const auto& part11 = mx.partition<2, 3, 0, 0>();
-    const auto& part12 = mx.partition<2, 1, 0, 3>();
-    const auto& part21 = mx.partition<3, 1, 2, 0>();
-    const auto& part22 = mx.partition<3, 3, 2, 1>();
+    const auto& part11 = mx.partition(2, 3, 0, 0);
+    const auto& part12 = mx.partition(2, 1, 0, 3);
+    const auto& part21 = mx.partition(3, 1, 2, 0);
+    const auto& part22 = mx.partition(3, 3, 2, 1);
 
     CHECK(part11 == mx11);
     CHECK(part12 == mx12);
@@ -196,47 +153,47 @@ TEST_CASE("matrix::partition()")
 }
 
 
-TEST_CASE("matrix partition addition")
+TEST_CASE("dmatrix partition addition")
 {
-    matrix<double, 4, 6> mx1{
+    dmatrix<double> mx1(4, 6, {
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
         7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
         19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
-    };
+    });
 
-    const auto& mx1_part11 = mx1.partition<2, 3, 0, 0>();
-    const auto& mx1_part12 = mx1.partition<2, 3, 0, 3>();
-    const auto& mx1_part21 = mx1.partition<2, 3, 2, 0>();
-    const auto& mx1_part22 = mx1.partition<2, 3, 2, 3>();
+    const auto& mx1_part11 = mx1.partition(2, 3, 0, 0);
+    const auto& mx1_part12 = mx1.partition(2, 3, 0, 3);
+    const auto& mx1_part21 = mx1.partition(2, 3, 2, 0);
+    const auto& mx1_part22 = mx1.partition(2, 3, 2, 3);
 
-    matrix<double, 4, 6> mx2{
+    dmatrix<double> mx2(4, 6, {
         -1.0, -2.0, -3.0, -4.0, -5.0, -6.0,
         -7.0, -8.0, -9.0, -10.0, -11.0, -12.0,
         -13.0, -14.0, -15.0, -16.0, -17.0, -18.0,
         -19.0, -20.0, -21.0, -22.0, -23.0, -24.0,
-    };
+    });
 
-    const auto& mx2_part11 = mx2.partition<2, 3, 0, 0>();
-    const auto& mx2_part12 = mx2.partition<2, 3, 0, 3>();
-    const auto& mx2_part21 = mx2.partition<2, 3, 2, 0>();
-    const auto& mx2_part22 = mx2.partition<2, 3, 2, 3>();
+    const auto& mx2_part11 = mx2.partition(2, 3, 0, 0);
+    const auto& mx2_part12 = mx2.partition(2, 3, 0, 3);
+    const auto& mx2_part21 = mx2.partition(2, 3, 2, 0);
+    const auto& mx2_part22 = mx2.partition(2, 3, 2, 3);
 
-    matrix<double, 4, 6> mx3;
+    dmatrix<double> mx3(4, 6);
 
-    auto& mx3_part11 = mx3.partition<2, 3, 0, 0>();
-    auto& mx3_part12 = mx3.partition<2, 3, 0, 3>();
-    auto& mx3_part21 = mx3.partition<2, 3, 2, 0>();
-    auto& mx3_part22 = mx3.partition<2, 3, 2, 3>();
+    auto mx3_part11 = mx3.partition(2, 3, 0, 0);
+    auto mx3_part12 = mx3.partition(2, 3, 0, 3);
+    auto mx3_part21 = mx3.partition(2, 3, 2, 0);
+    auto mx3_part22 = mx3.partition(2, 3, 2, 3);
 
     add(mx1, mx2, mx3);
 
-    matrix<double, 4, 6> mx4;
+    dmatrix<double> mx4(4, 6);
 
-    auto& mx4_part11 = mx4.partition<2, 3, 0, 0>();
-    auto& mx4_part12 = mx4.partition<2, 3, 0, 3>();
-    auto& mx4_part21 = mx4.partition<2, 3, 2, 0>();
-    auto& mx4_part22 = mx4.partition<2, 3, 2, 3>();
+    auto mx4_part11 = mx4.partition(2, 3, 0, 0);
+    auto mx4_part12 = mx4.partition(2, 3, 0, 3);
+    auto mx4_part21 = mx4.partition(2, 3, 2, 0);
+    auto mx4_part22 = mx4.partition(2, 3, 2, 3);
 
     add(mx1_part11, mx2_part11, mx4_part11);
     add(mx1_part12, mx2_part12, mx4_part12);
@@ -252,52 +209,52 @@ TEST_CASE("matrix partition addition")
 }
 
 
-TEST_CASE("matrix partition multiplication")
+TEST_CASE("dmatrix partition multiplication")
 {
-    matrix<double, 4, 6> mx1{
+    dmatrix<double> mx1(4, 6, {
         1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
         7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
         13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
         19.0, 20.0, 21.0, 22.0, 23.0, 24.0,
-    };
+    });
 
-    const auto& mx1_part11 = mx1.partition<2, 3, 0, 0>();
-    const auto& mx1_part12 = mx1.partition<2, 3, 0, 3>();
-    const auto& mx1_part21 = mx1.partition<2, 3, 2, 0>();
-    const auto& mx1_part22 = mx1.partition<2, 3, 2, 3>();
+    const auto& mx1_part11 = mx1.partition(2, 3, 0, 0);
+    const auto& mx1_part12 = mx1.partition(2, 3, 0, 3);
+    const auto& mx1_part21 = mx1.partition(2, 3, 2, 0);
+    const auto& mx1_part22 = mx1.partition(2, 3, 2, 3);
 
-    matrix<double, 6, 4> mx2{
+    dmatrix<double> mx2(6, 4, {
         -1.0, -2.0, -3.0, -4.0,
         -5.0, -6.0, -7.0, -8.0,
         -9.0, -10.0, -11.0, -12.0,
         -13.0, -14.0, -15.0, -16.0,
         -17.0, -18.0, -19.0, -20.0,
         -21.0, -22.0, -23.0, -24.0,
-    };
+    });
 
-    const auto& mx2_part11 = mx2.partition<3, 2, 0, 0>();
-    const auto& mx2_part12 = mx2.partition<3, 2, 0, 2>();
-    const auto& mx2_part21 = mx2.partition<3, 2, 3, 0>();
-    const auto& mx2_part22 = mx2.partition<3, 2, 3, 2>();
+    const auto& mx2_part11 = mx2.partition(3, 2, 0, 0);
+    const auto& mx2_part12 = mx2.partition(3, 2, 0, 2);
+    const auto& mx2_part21 = mx2.partition(3, 2, 3, 0);
+    const auto& mx2_part22 = mx2.partition(3, 2, 3, 2);
 
-    matrix<double, 4, 4> mx3;
+    dmatrix<double> mx3(4, 4);
 
-    auto& mx3_part11 = mx3.partition<2, 2, 0, 0>();
-    auto& mx3_part12 = mx3.partition<2, 2, 0, 2>();
-    auto& mx3_part21 = mx3.partition<2, 2, 2, 0>();
-    auto& mx3_part22 = mx3.partition<2, 2, 2, 2>();
+    auto mx3_part11 = mx3.partition(2, 2, 0, 0);
+    auto mx3_part12 = mx3.partition(2, 2, 0, 2);
+    auto mx3_part21 = mx3.partition(2, 2, 2, 0);
+    auto mx3_part22 = mx3.partition(2, 2, 2, 2);
 
     mul(mx1, mx2, mx3);
 
-    matrix<double, 4, 4> mx4;
+    dmatrix<double> mx4(4, 4);
 
-    auto& mx4_part11 = mx4.partition<2, 2, 0, 0>();
-    auto& mx4_part12 = mx4.partition<2, 2, 0, 2>();
-    auto& mx4_part21 = mx4.partition<2, 2, 2, 0>();
-    auto& mx4_part22 = mx4.partition<2, 2, 2, 2>();
+    auto mx4_part11 = mx4.partition(2, 2, 0, 0);
+    auto mx4_part12 = mx4.partition(2, 2, 0, 2);
+    auto mx4_part21 = mx4.partition(2, 2, 2, 0);
+    auto mx4_part22 = mx4.partition(2, 2, 2, 2);
 
-    matrix<double, 2, 2> mx_tmp1;
-    matrix<double, 2, 2> mx_tmp2;
+    dmatrix<double> mx_tmp1(2, 2);
+    dmatrix<double> mx_tmp2(2, 2);
 
     mul(mx1_part11, mx2_part11, mx_tmp1);
     mul(mx1_part12, mx2_part21, mx_tmp2);
@@ -324,101 +281,101 @@ TEST_CASE("matrix partition multiplication")
 }
 
 
-TEST_CASE("matrix inv", "[inverse]")
+TEST_CASE("dmatrix inv", "[inverse]")
 {
-    f32mx_t<1, 1> a{
+    f32dmx_t a(1, 1, {
         5,
-    };
+    });
 
-    f32mx_t<1, 1> expected_a_inv{
+    f32dmx_t expected_a_inv(1, 1, {
         0.2,
-    };
+    });
 
-    f32mx_t<1, 1> identity1x1 = f32mx_t<1, 1>::identity();
-    f32mx_t<1, 1> a_expected_a_inv;
+    f32dmx_t identity1x1 = f32dmx_t::identity(1, 1);
+    f32dmx_t a_expected_a_inv(1, 1);
     mul(a, expected_a_inv, a_expected_a_inv);
     CHECK(a_expected_a_inv.equals(identity1x1, 0.001));
 
-    f32mx_t<1, 1> a_inv;
+    f32dmx_t a_inv(1, 1);
     inv(a, a_inv);
     CHECK(a_inv.equals(expected_a_inv));
 
-    f32mx_t<1, 1> a_a_inv;
+    f32dmx_t a_a_inv(1, 1);
     mul(a, a_inv, a_a_inv);
     CHECK(a_a_inv.equals(identity1x1));
 
-    f32mx_t<2, 2> b{
+    f32dmx_t b(2, 2, {
         5, 6,
         2, 2,
-    };
+    });
 
-    f32mx_t<2, 2> expected_b_inv{
+    f32dmx_t expected_b_inv(2, 2, {
         -1, 3,
         1, -2.5,
-    };
+    });
 
-    f32mx_t<2, 2> identity2x2 = f32mx_t<2, 2>::identity();
-    f32mx_t<2, 2> b_expected_b_inv;
+    f32dmx_t identity2x2 = f32dmx_t::identity(2, 2);
+    f32dmx_t b_expected_b_inv(2, 2);
     mul(b, expected_b_inv, b_expected_b_inv);
     CHECK(b_expected_b_inv.equals(identity2x2, 1e-7));
 
-    f32mx_t<2, 2> b_inv;
+    f32dmx_t b_inv(2, 2);
     inv(b, b_inv);
     CHECK(b_inv.equals(expected_b_inv, 1e-7));
 
-    f32mx_t<2, 2> b_b_inv;
+    f32dmx_t b_b_inv(2, 2);
     mul(b, b_inv, b_b_inv);
     CHECK(b_b_inv.equals(identity2x2, 1e-7));
 
-    f32mx_t<4, 4> c{
+    f32dmx_t c(4, 4, {
         5, 6, 6, 8,
         2, 2, 2, 8,
         6, 6, 2, 8,
         2, 3, 6, 7,
-    };
+    });
 
-    f32mx_t<4, 4> expected_c_inv{
+    f32dmx_t expected_c_inv(4, 4, {
         -17, -9, 12, 16,
         17, 8.75, -11.75, -16,
         -4, -2.25, 2.75, 4,
         1, 0.75, -0.75, -1,
-    };
+    });
 
-    f32mx_t<4, 4> identity4x4 = f32mx_t<4, 4>::identity();
-    f32mx_t<4, 4> c_expected_c_inv;
+    f32dmx_t identity4x4 = f32dmx_t::identity(4, 4);
+    f32dmx_t c_expected_c_inv(4, 4);
     mul(c, expected_c_inv, c_expected_c_inv);
     CHECK(c_expected_c_inv.equals(identity4x4, 1e-7));
 
-    f32mx_t<4, 4> c_inv;
+    f32dmx_t c_inv(4, 4);
     inv(c, c_inv);
     CHECK(c_inv.equals(expected_c_inv, 1e-7));
 
-    f32mx_t<4, 4> c_c_inv;
+    f32dmx_t c_c_inv(4, 4);
     mul(c, c_inv, c_c_inv);
     CHECK(c_c_inv.equals(identity4x4, 1e-7));
 
-    f32mx_t<3, 3> d{
+    f32dmx_t d(3, 3, {
         0, -3, -2,
         1, -4, -2,
         -3, 4, 1,
-    };
+    });
 
-    f32mx_t<3, 3> expected_d_inv{
+    f32dmx_t expected_d_inv(3, 3, {
         4, -5, -2,
         5, -6, -2,
         -8, 9, 3,
-    };
+    });
 
-    f32mx_t<3, 3> identity3x3 = f32mx_t<3, 3>::identity();
-    f32mx_t<3, 3> d_expected_d_inv;
+    f32dmx_t identity3x3 = f32dmx_t::identity(3, 3);
+    f32dmx_t d_expected_d_inv(3, 3);
     mul(d, expected_d_inv, d_expected_d_inv);
     CHECK(d_expected_d_inv.equals(identity3x3, 1e-7));
 
-    f32mx_t<3, 3> d_inv;
+    f32dmx_t d_inv(3, 3);
     inv(d, d_inv);
     CHECK(d_inv.equals(expected_d_inv, 1e-7));
 
-    f32mx_t<3, 3> d_d_inv;
+    f32dmx_t d_d_inv(3, 3);
     mul(d, d_inv, d_d_inv);
     CHECK(d_d_inv.equals(identity3x3, 1e-7));
 }

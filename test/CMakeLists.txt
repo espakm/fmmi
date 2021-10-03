@@ -4,6 +4,7 @@ set(TEST_SOURCES
     test.cpp
     fmmi/fmmi_test.cpp
     fmmi/matrix_test.cpp
+    fmmi/dmatrix_test.cpp
 )
 
 add_executable(test ${TEST_SOURCES})

@@ -350,7 +350,7 @@ void transpose(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
 template <typename T, uint16_t m,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
-inline
+//inline
 void inv(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
          matrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
 {
