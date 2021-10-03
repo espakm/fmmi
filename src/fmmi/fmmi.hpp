@@ -11,7 +11,7 @@ template <typename T, uint16_t m, uint16_t n, uint16_t p,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
           uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-//inline
+inline
 void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
              const smatrix<T, n, p, y0_b, x0_b, stride_b>& b,
              smatrix<T, m, p, y0_c, x0_c, stride_c>& c)
@@ -173,7 +173,7 @@ void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 template <typename T, uint16_t m,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
-//inline
+inline
 void inv_rec(const smatrix<T, m, m, y0_a, x0_a, stride_a>& a,
               smatrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
 {
@@ -236,9 +236,11 @@ void inv_rec(const smatrix<T, m, m, y0_a, x0_a, stride_a>& a,
 }
 
 
-template <typename T>
-//inline
-void mul_rec(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
+template <typename T, bool managed_a, bool managed_b, bool managed_c>
+inline
+void mul_rec(const dmatrix<T, managed_a>& a,
+             const dmatrix<T, managed_b>& b,
+             dmatrix<T, managed_c>& c)
 {
     assert(a.width() == b.height()
            && a.height() == c.height()
@@ -402,9 +404,9 @@ void mul_rec(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
 }
 
 
-template <typename T>
-//inline
-void inv_rec(const dmatrix<T>& a, dmatrix<T>& ainv)
+template <typename T, bool managed_a, bool managed_ainv>
+inline
+void inv_rec(const dmatrix<T, managed_a>& a, dmatrix<T, managed_ainv>& ainv)
 {
     assert(a.height() == a.width()
            && a.height() == ainv.height()
