@@ -1,5 +1,5 @@
-#ifndef FMMI_MATRIX_HPP
-#define FMMI_MATRIX_HPP
+#ifndef FMMI_SMATRIX_HPP
+#define FMMI_SMATRIX_HPP
 
 #include <algorithm>
 #include <cstdint>
@@ -34,42 +34,42 @@ constexpr std::size_t padded_size(uint16_t height, uint16_t width)
 
 template <typename T, uint16_t height, uint16_t width,
           uint16_t y0, uint16_t x0, uint16_t stride>
-class matrix;
+class smatrix;
 
 
 template <uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-using i16mx_t = matrix<int16_t, height, width, y0, x0, stride>;
+using i16smx_t = smatrix<int16_t, height, width, y0, x0, stride>;
 
 
 template <uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-using i32mx_t = matrix<int32_t, height, width, y0, x0, stride>;
+using i32smx_t = smatrix<int32_t, height, width, y0, x0, stride>;
 
 
 template <uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-using i64mx_t = matrix<int64_t, height, width, y0, x0, stride>;
+using i64smx_t = smatrix<int64_t, height, width, y0, x0, stride>;
 
 
 template <uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-using f32mx_t = matrix<float, height, width, y0, x0, stride>;
+using f32smx_t = smatrix<float, height, width, y0, x0, stride>;
 
 
 template <uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-using f64mx_t = matrix<double, height, width, y0, x0, stride>;
+using f64smx_t = smatrix<double, height, width, y0, x0, stride>;
 
 
 template <typename T, uint16_t height, uint16_t width,
           uint16_t y0 = 0, uint16_t x0 = 0, uint16_t stride = width>
-class matrix
+class smatrix
 {
 public:
-    matrix();
+    smatrix();
 
-    matrix(std::initializer_list<T> init_list);
+    smatrix(std::initializer_list<T> init_list);
 
     inline
     const T& operator()(uint16_t y, uint16_t x) const;
@@ -79,26 +79,26 @@ public:
 
     template <uint16_t p_height, uint16_t p_width, uint16_t p_y0 = 0, uint16_t p_x0 = 0>
     inline
-    const matrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& partition() const;
+    const smatrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& partition() const;
 
     template <uint16_t p_height, uint16_t p_width, uint16_t p_y0 = 0, uint16_t p_x0 = 0>
     inline
-    matrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& partition();
+    smatrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& partition();
 
-    /// Matrix equality.
+    /// smatrix equality.
     /// Note that this implementation does not allow any 'epsilon' difference
     /// between elements.
     template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-    bool operator==(const matrix<T, height, width, other_y0, other_x0, other_stride>& other) const;
+    bool operator==(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other) const;
 
     template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-    bool operator!=(const matrix<T, height, width, other_y0, other_x0, other_stride>& other) const;
+    bool operator!=(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other) const;
 
     template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-    bool equals(const matrix<T, height, width, other_y0, other_x0, other_stride>& other, double margin = 0.0) const;
+    bool equals(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other, double margin = 0.0) const;
 
     static
-    matrix<T, height, width> identity();
+    smatrix<T, height, width> identity();
 
 private:
     static constexpr
@@ -109,14 +109,14 @@ private:
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
-matrix<T, height, width, y0, x0, stride>::matrix()
+smatrix<T, height, width, y0, x0, stride>::smatrix()
 //    : data_{}
 {
 }
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
-matrix<T, height, width, y0, x0, stride>::matrix(std::initializer_list<T> init_list)
+smatrix<T, height, width, y0, x0, stride>::smatrix(std::initializer_list<T> init_list)
     : data_{}
 {
     auto it_data = &data_[offset_];
@@ -143,7 +143,7 @@ matrix<T, height, width, y0, x0, stride>::matrix(std::initializer_list<T> init_l
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 inline
-const T& matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x) const
+const T& smatrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x) const
 {
     return data_[offset_ + y * stride + x];
 }
@@ -151,7 +151,7 @@ const T& matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 inline
-T& matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x)
+T& smatrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x)
 {
     return data_[offset_ + y * stride + x];
 }
@@ -160,24 +160,24 @@ T& matrix<T, height, width, y0, x0, stride>::operator()(uint16_t y, uint16_t x)
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 template <uint16_t p_height, uint16_t p_width, uint16_t p_y0, uint16_t p_x0>
 inline
-const matrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& matrix<T, height, width, y0, x0, stride>::partition() const
+const smatrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& smatrix<T, height, width, y0, x0, stride>::partition() const
 {
-    return *reinterpret_cast<const matrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>*>(this);
+    return *reinterpret_cast<const smatrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>*>(this);
 }
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 template <uint16_t p_height, uint16_t p_width, uint16_t p_y0, uint16_t p_x0>
 inline
-matrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& matrix<T, height, width, y0, x0, stride>::partition()
+smatrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>& smatrix<T, height, width, y0, x0, stride>::partition()
 {
-    return *reinterpret_cast<matrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>*>(this);
+    return *reinterpret_cast<smatrix<T, p_height, p_width, y0 + p_y0, x0 + p_x0, stride>*>(this);
 }
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-bool matrix<T, height, width, y0, x0, stride>::operator==(const matrix<T, height, width, other_y0, other_x0, other_stride>& other) const
+bool smatrix<T, height, width, y0, x0, stride>::operator==(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other) const
 {
     if constexpr (width == stride && width == other_stride)
     {
@@ -198,7 +198,7 @@ bool matrix<T, height, width, y0, x0, stride>::operator==(const matrix<T, height
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-bool matrix<T, height, width, y0, x0, stride>::operator!=(const matrix<T, height, width, other_y0, other_x0, other_stride>& other) const
+bool smatrix<T, height, width, y0, x0, stride>::operator!=(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other) const
 {
     return !(*this == other);
 }
@@ -206,8 +206,8 @@ bool matrix<T, height, width, y0, x0, stride>::operator!=(const matrix<T, height
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
 template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-bool matrix<T, height, width, y0, x0, stride>::equals(
-        const matrix<T, height, width, other_y0, other_x0, other_stride>& other,
+bool smatrix<T, height, width, y0, x0, stride>::equals(
+        const smatrix<T, height, width, other_y0, other_x0, other_stride>& other,
         double margin) const
 {
     for (uint16_t y = 0; y < height; ++y)
@@ -226,9 +226,9 @@ bool matrix<T, height, width, y0, x0, stride>::equals(
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
-matrix<T, height, width> matrix<T, height, width, y0, x0, stride>::identity()
+smatrix<T, height, width> smatrix<T, height, width, y0, x0, stride>::identity()
 {
-    matrix<T, height, width> ident;
+    smatrix<T, height, width> ident;
     for (uint16_t y = 0; y < height; ++y)
     {
         for (uint16_t x = 0; x < width; ++x)
@@ -244,9 +244,9 @@ template <typename T, uint16_t m, uint16_t n,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
           uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-void add(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         const matrix<T, m, n, y0_b, x0_b, stride_b>& b,
-         matrix<T, m, n, y0_c, x0_c, stride_c>& c)
+void add(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         const smatrix<T, m, n, y0_b, x0_b, stride_b>& b,
+         smatrix<T, m, n, y0_c, x0_c, stride_c>& c)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -262,9 +262,9 @@ template <typename T, uint16_t m, uint16_t n,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
           uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-void sub(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         const matrix<T, m, n, y0_b, x0_b, stride_b>& b,
-         matrix<T, m, n, y0_c, x0_c, stride_c>& c)
+void sub(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         const smatrix<T, m, n, y0_b, x0_b, stride_b>& b,
+         smatrix<T, m, n, y0_c, x0_c, stride_c>& c)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -279,8 +279,8 @@ void sub(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
 template <typename T, uint16_t m, uint16_t n,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void add(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         matrix<T, m, n, y0_b, x0_b, stride_b>& b)
+void add(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         smatrix<T, m, n, y0_b, x0_b, stride_b>& b)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -295,8 +295,8 @@ void add(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
 template <typename T, uint16_t m, uint16_t n,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void sub(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         matrix<T, m, n, y0_b, x0_b, stride_b>& b)
+void sub(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         smatrix<T, m, n, y0_b, x0_b, stride_b>& b)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -312,9 +312,9 @@ template <typename T, uint16_t m, uint16_t n, uint16_t p,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
           uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-void mul(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         const matrix<T, n, p, y0_b, x0_b, stride_b>& b,
-         matrix<T, m, p, y0_c, x0_c, stride_c>& c)
+void mul(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         const smatrix<T, n, p, y0_b, x0_b, stride_b>& b,
+         smatrix<T, m, p, y0_c, x0_c, stride_c>& c)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -334,8 +334,8 @@ void mul(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
 template <typename T, uint16_t m, uint16_t n,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void transpose(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         matrix<T, n, m, y0_b, x0_b, stride_b>& b)
+void transpose(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+         smatrix<T, n, m, y0_b, x0_b, stride_b>& b)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -351,8 +351,8 @@ template <typename T, uint16_t m,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
 //inline
-void inv(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
-         matrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
+void inv(const smatrix<T, m, m, y0_a, x0_a, stride_a>& a,
+         smatrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
 {
     if constexpr (m == 1)
     {
@@ -381,7 +381,7 @@ void inv(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
         auto& ainv10 = ainv.template partition<p, n, n, 0>();
         auto& ainv11 = ainv.template partition<p, p, n, n>();
 
-        matrix<T, m, m> tmp;
+        smatrix<T, m, m> tmp;
         auto& tmp00 = tmp.template partition<n, n, 0, 0>();
         auto& tmp01 = tmp.template partition<n, p, 0, n>();
         auto& tmp10 = tmp.template partition<p, n, n, 0>();

@@ -1,7 +1,7 @@
 #ifndef FMMI_FMMI_HPP
 #define FMMI_FMMI_HPP
 
-#include "fmmi/matrix.hpp"
+#include "fmmi/smatrix.hpp"
 #include "fmmi/dmatrix.hpp"
 
 namespace fmmi
@@ -12,9 +12,9 @@ template <typename T, uint16_t m, uint16_t n, uint16_t p,
           uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
           uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
 //inline
-void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
-              const matrix<T, n, p, y0_b, x0_b, stride_b>& b,
-              matrix<T, m, p, y0_c, x0_c, stride_c>& c)
+void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
+             const smatrix<T, n, p, y0_b, x0_b, stride_b>& b,
+             smatrix<T, m, p, y0_c, x0_c, stride_c>& c)
 {
     if constexpr (m == 2 && n == 2 && p == 2)
     {
@@ -52,8 +52,8 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
         auto& c10 = c.template partition<mh, ph, mh, 0>();
         auto& c11 = c.template partition<mh, ph, mh, ph>();
 
-        matrix<T, mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
-        matrix<T, nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
+        smatrix<T, mh, nh> tmp1, tmp2, tmp3, tmp4, tmp5;
+        smatrix<T, nh, ph> tmp6, tmp7, tmp8, tmp9, tmp10;
 
         for (uint16_t i = 0; i < nh; ++i)
         {
@@ -75,14 +75,14 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
             }
         }
 
-        matrix<T, mh, ph> p1, p2, p3, p4, p5, p6, p7;
-        mul_fast(tmp1, tmp6, p1);
-        mul_fast(tmp2, b00, p2);
-        mul_fast(a00, tmp7, p3);
-        mul_fast(a11, tmp8, p4);
-        mul_fast(tmp3, b11, p5);
-        mul_fast(tmp4, tmp9, p6);
-        mul_fast(tmp5, tmp10, p7);
+        smatrix<T, mh, ph> p1, p2, p3, p4, p5, p6, p7;
+        mul_rec(tmp1, tmp6, p1);
+        mul_rec(tmp2, b00, p2);
+        mul_rec(a00, tmp7, p3);
+        mul_rec(a11, tmp8, p4);
+        mul_rec(tmp3, b11, p5);
+        mul_rec(tmp4, tmp9, p6);
+        mul_rec(tmp5, tmp10, p7);
 
         for (uint16_t i = 0; i < mh; ++i)
         {
@@ -101,7 +101,7 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
         {
             const auto& a1 = a.template partition<m - 1, n, 1, 0>();
             auto& c1 = c.template partition<m - 1, p, 1, 0>();
-            mul_fast(a1, b, c1);
+            mul_rec(a1, b, c1);
         }
 
         const auto& a0 = a.template partition<1, n>();
@@ -122,7 +122,7 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
         {
             const auto& b1 = b.template partition<n, p - 1, 0, 1>();
             auto& c1 = c.template partition<m, p - 1, 0, 1>();
-            mul_fast(a, b1, c1);
+            mul_rec(a, b1, c1);
         }
 
         const auto& b0 = b.template partition<n, 1>();
@@ -146,7 +146,7 @@ void mul_fast(const matrix<T, m, n, y0_a, x0_a, stride_a>& a,
         {
             const auto& a1 = a.template partition<m, n - 1, 0, 1>();
             const auto& b1 = b.template partition<n - 1, p, 1, 0>();
-            mul_fast(a1, b1, c);
+            mul_rec(a1, b1, c);
 
             for (uint16_t i = 0; i < m; ++i)
             {
@@ -174,8 +174,8 @@ template <typename T, uint16_t m,
           uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
           uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
 //inline
-void inv_fast(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
-              matrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
+void inv_rec(const smatrix<T, m, m, y0_a, x0_a, stride_a>& a,
+              smatrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
 {
     if constexpr (m == 1)
     {
@@ -204,25 +204,25 @@ void inv_fast(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
         auto& ainv10 = ainv.template partition<p, n, n, 0>();
         auto& ainv11 = ainv.template partition<p, p, n, n>();
 
-        matrix<T, m, m> tmp;
+        smatrix<T, m, m> tmp;
         auto& tmp00 = tmp.template partition<n, n, 0, 0>();
         auto& tmp01 = tmp.template partition<n, p, 0, n>();
         auto& tmp10 = tmp.template partition<p, n, n, 0>();
         auto& tmp11 = tmp.template partition<p, p, n, n>();
 
-        inv_fast(a00, tmp00);
-        mul_fast(a10, tmp00, tmp10);
-        mul_fast(tmp10, a01, tmp11);
+        inv_rec(a00, tmp00);
+        mul_rec(a10, tmp00, tmp10);
+        mul_rec(tmp10, a01, tmp11);
         sub(a11, tmp11);
-        inv_fast(tmp11, ainv11);
+        inv_rec(tmp11, ainv11);
 
-        mul_fast(tmp00, a01, tmp01);
-        mul_fast(tmp01, ainv11, ainv01);
+        mul_rec(tmp00, a01, tmp01);
+        mul_rec(tmp01, ainv11, ainv01);
 
-        mul_fast(ainv01, tmp10, ainv00);
+        mul_rec(ainv01, tmp10, ainv00);
         add(tmp00, ainv00);
 
-        mul_fast(ainv11, tmp10, ainv10);
+        mul_rec(ainv11, tmp10, ainv10);
 
         for (uint16_t i = 0; i < n; ++i)
         {
@@ -238,7 +238,7 @@ void inv_fast(const matrix<T, m, m, y0_a, x0_a, stride_a>& a,
 
 template <typename T>
 //inline
-void mul_fast(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
+void mul_rec(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
 {
     assert(a.width() == b.height()
            && a.height() == c.height()
@@ -308,13 +308,13 @@ void mul_fast(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
         }
 
         dmatrix<T> p1(mh, ph), p2(mh, ph), p3(mh, ph), p4(mh, ph), p5(mh, ph), p6(mh, ph), p7(mh, ph);
-        mul_fast(tmp1, tmp6, p1);
-        mul_fast(tmp2, b00, p2);
-        mul_fast(a00, tmp7, p3);
-        mul_fast(a11, tmp8, p4);
-        mul_fast(tmp3, b11, p5);
-        mul_fast(tmp4, tmp9, p6);
-        mul_fast(tmp5, tmp10, p7);
+        mul_rec(tmp1, tmp6, p1);
+        mul_rec(tmp2, b00, p2);
+        mul_rec(a00, tmp7, p3);
+        mul_rec(a11, tmp8, p4);
+        mul_rec(tmp3, b11, p5);
+        mul_rec(tmp4, tmp9, p6);
+        mul_rec(tmp5, tmp10, p7);
 
         for (uint16_t i = 0; i < mh; ++i)
         {
@@ -333,7 +333,7 @@ void mul_fast(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
         {
             const auto& a1 = a.partition(m - 1, n, 1, 0);
             auto c1 = c.partition(m - 1, p, 1, 0);
-            mul_fast(a1, b, c1);
+            mul_rec(a1, b, c1);
         }
 
         const auto& a0 = a.partition(1, n);
@@ -354,7 +354,7 @@ void mul_fast(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
         {
             const auto& b1 = b.partition(n, p - 1, 0, 1);
             auto c1 = c.partition(m, p - 1, 0, 1);
-            mul_fast(a, b1, c1);
+            mul_rec(a, b1, c1);
         }
 
         const auto& b0 = b.partition(n, 1);
@@ -378,7 +378,7 @@ void mul_fast(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
         {
             const auto& a1 = a.partition(m, n - 1, 0, 1);
             const auto& b1 = b.partition(n - 1, p, 1, 0);
-            mul_fast(a1, b1, c);
+            mul_rec(a1, b1, c);
 
             for (uint16_t i = 0; i < m; ++i)
             {
@@ -404,8 +404,7 @@ void mul_fast(const dmatrix<T>& a, const dmatrix<T>& b, dmatrix<T>& c)
 
 template <typename T>
 //inline
-void inv_fast(const dmatrix<T>& a,
-              dmatrix<T>& ainv)
+void inv_rec(const dmatrix<T>& a, dmatrix<T>& ainv)
 {
     assert(a.height() == a.width()
            && a.height() == ainv.height()
@@ -446,19 +445,19 @@ void inv_fast(const dmatrix<T>& a,
         auto tmp10 = tmp.partition(p, n, n, 0);
         auto tmp11 = tmp.partition(p, p, n, n);
 
-        inv_fast(a00, tmp00);
-        mul_fast(a10, tmp00, tmp10);
-        mul_fast(tmp10, a01, tmp11);
+        inv_rec(a00, tmp00);
+        mul_rec(a10, tmp00, tmp10);
+        mul_rec(tmp10, a01, tmp11);
         sub(a11, tmp11);
-        inv_fast(tmp11, ainv11);
+        inv_rec(tmp11, ainv11);
 
-        mul_fast(tmp00, a01, tmp01);
-        mul_fast(tmp01, ainv11, ainv01);
+        mul_rec(tmp00, a01, tmp01);
+        mul_rec(tmp01, ainv11, ainv01);
 
-        mul_fast(ainv01, tmp10, ainv00);
+        mul_rec(ainv01, tmp10, ainv00);
         add(tmp00, ainv00);
 
-        mul_fast(ainv11, tmp10, ainv10);
+        mul_rec(ainv11, tmp10, ainv10);
 
         for (uint16_t i = 0; i < n; ++i)
         {
