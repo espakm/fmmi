@@ -53,7 +53,7 @@ static const dmatrix<double> dmx2(7, 7, {
 static dmatrix<double> dmx3(7, 7);
 static dmatrix<double> dmx4(7, 7);
 
-TEMPLATE_TEST_CASE_SIG("mul_rec smatrix/dmatrix up to 7x7", "[mul_rec][smatrix][dmatrix][equals]",
+TEMPLATE_TEST_CASE_SIG("mul_rec smatrix/dmatrix equals up to 7x7", "[mul_rec][smatrix][dmatrix][equals]",
         ((uint16_t m, uint16_t n, uint16_t p), m, n, p),
         (1, 1, 1), (1, 1, 2), (1, 1, 3), (1, 1, 4), (1, 1, 5), (1, 1, 6), (1, 1, 7),
         (1, 2, 1), (1, 2, 2), (1, 2, 3), (1, 2, 4), (1, 2, 5), (1, 2, 6), (1, 2, 7),
@@ -264,7 +264,7 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
 }
 
 
-TEST_CASE("inv_rec smatrix", "[inv_rec][smatrix][equals]")
+TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
 {
     f32smx_t<1, 1> a{
         5,
@@ -366,26 +366,26 @@ TEST_CASE("inv_rec smatrix", "[inv_rec][smatrix][equals]")
 
 TEMPLATE_TEST_CASE_SIG("inv_rec smatrix benchmark", "[inv_rec][smatrix][benchmark]",
                        ((uint16_t m), m),
-                       (1)
-//                       (2),
-//                       (3),
-//                       (4),
-//                       (7),
-//                       (8),
-//                       (15),
-//                       (16),
-//                       (31),
-//                       (32),
-//                       (63),
-//                       (64)
-//                       (127),
-//                       (128)
-//                       (255),
-//                       (256),
-//                       (511),
-//                       (512),
-//                       (1023)
-//                       (1024)
+                       1,
+                       2,
+                       3,
+                       4
+//                       7,
+//                       8,
+//                       15,
+//                       16,
+//                       31,
+//                       32,
+//                       63,
+//                       64,
+//                       127,
+//                       128,
+//                       255,
+//                       256,
+//                       511,
+//                       512,
+//                       1023,
+//                       1024
                        )
 {
     const auto& i16smx_a = i16smx_1.partition<m, m>();
@@ -550,7 +550,7 @@ TEMPLATE_TEST_CASE_SIG("mul_rec dmatrix benchmark", "[mul_rec][dmatrix][benchmar
 }
 
 
-TEST_CASE("inv_rec dmatrix", "[inv_rec][dmatrix][equals]")
+TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
 {
     f32dmx_t a(1, 1, {
         5,
@@ -652,26 +652,26 @@ TEST_CASE("inv_rec dmatrix", "[inv_rec][dmatrix][equals]")
 
 TEMPLATE_TEST_CASE_SIG("inv_rec dmatrix benchmark", "[inv_rec][dmatrix][benchmark]",
                        ((uint16_t m), m),
-                       (1)
-//                       (2),
-//                       (3),
-//                       (4),
-//                       (7),
-//                       (8),
-//                       (15),
-//                       (16),
-//                       (31),
-//                       (32),
-//                       (63),
-//                       (64)
-//                       (127),
-//                       (128)
-//                       (255),
-//                       (256),
-//                       (511),
-//                       (512),
-//                       (1023)
-//                       (1024)
+                       1,
+                       2,
+                       3,
+                       4
+//                       7,
+//                       8,
+//                       15,
+//                       16,
+//                       31,
+//                       32,
+//                       63,
+//                       64,
+//                       127,
+//                       128,
+//                       255,
+//                       256,
+//                       511,
+//                       512,
+//                       1023,
+//                       1024
                        )
 {
     const auto& i16dmx_a = i16dmx_1.partition(m, m);
