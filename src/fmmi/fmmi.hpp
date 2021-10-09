@@ -104,16 +104,14 @@ void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
             mul_rec(a1, b, c1);
         }
 
-        const auto& a0 = a.template partition<1, n>();
-        auto& c0 = c.template partition<1, p>();
         for (uint16_t j = 0; j < p; ++j)
         {
             T sum{};
             for (uint16_t k = 0; k < n; ++k)
             {
-                sum += a0(0, k) * b(k, j);
+                sum += a(0, k) * b(k, j);
             }
-            c0(0, j) = sum;
+            c(0, j) = sum;
         }
     }
     else if constexpr ((p % 2) == 1)
@@ -125,23 +123,18 @@ void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
             mul_rec(a, b1, c1);
         }
 
-        const auto& b0 = b.template partition<n, 1>();
-        auto& c0 = c.template partition<m, 1>();
         for (uint16_t i = 0; i < m; ++i)
         {
             T sum{};
             for (uint16_t k = 0; k < n; ++k)
             {
-                sum += a(i, k) * b0(k, 0);
+                sum += a(i, k) * b(k, 0);
             }
-            c0(i, 0) = sum;
+            c(i, 0) = sum;
         }
     }
     else /// (n % 2) == 1
     {
-        const auto& a0 = a.template partition<m, 1>();
-        const auto& b0 = b.template partition<1, p>();
-
         if constexpr (n != 1)
         {
             const auto& a1 = a.template partition<m, n - 1, 0, 1>();
@@ -152,7 +145,7 @@ void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
             {
                 for (uint16_t j = 0; j < p; ++j)
                 {
-                    c(i, j) += a0(i, 0) * b0(0, j);
+                    c(i, j) += a(i, 0) * b(0, j);
                 }
             }
         }
@@ -162,7 +155,7 @@ void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
             {
                 for (uint16_t j = 0; j < p; ++j)
                 {
-                    c(i, j) = a0(i, 0) * b0(0, j);
+                    c(i, j) = a(i, 0) * b(0, j);
                 }
             }
         }
@@ -338,16 +331,14 @@ void mul_rec(const dmatrix<T, managed_a>& a,
             mul_rec(a1, b, c1);
         }
 
-        const auto& a0 = a.partition(1, n);
-        auto c0 = c.partition(1, p);
         for (uint16_t j = 0; j < p; ++j)
         {
             T sum{};
             for (uint16_t k = 0; k < n; ++k)
             {
-                sum += a0(0, k) * b(k, j);
+                sum += a(0, k) * b(k, j);
             }
-            c0(0, j) = sum;
+            c(0, j) = sum;
         }
     }
     else if ((p % 2) == 1)
@@ -359,23 +350,18 @@ void mul_rec(const dmatrix<T, managed_a>& a,
             mul_rec(a, b1, c1);
         }
 
-        const auto& b0 = b.partition(n, 1);
-        auto c0 = c.partition(m, 1);
         for (uint16_t i = 0; i < m; ++i)
         {
             T sum{};
             for (uint16_t k = 0; k < n; ++k)
             {
-                sum += a(i, k) * b0(k, 0);
+                sum += a(i, k) * b(k, 0);
             }
-            c0(i, 0) = sum;
+            c(i, 0) = sum;
         }
     }
     else /// (n % 2) == 1
     {
-        const auto& a0 = a.partition(m, 1);
-        const auto& b0 = b.partition(1, p);
-
         if (n != 1)
         {
             const auto& a1 = a.partition(m, n - 1, 0, 1);
@@ -386,7 +372,7 @@ void mul_rec(const dmatrix<T, managed_a>& a,
             {
                 for (uint16_t j = 0; j < p; ++j)
                 {
-                    c(i, j) += a0(i, 0) * b0(0, j);
+                    c(i, j) += a(i, 0) * b(0, j);
                 }
             }
         }
@@ -396,7 +382,7 @@ void mul_rec(const dmatrix<T, managed_a>& a,
             {
                 for (uint16_t j = 0; j < p; ++j)
                 {
-                    c(i, j) = a0(i, 0) * b0(0, j);
+                    c(i, j) = a(i, 0) * b(0, j);
                 }
             }
         }
