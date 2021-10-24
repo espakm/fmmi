@@ -1,5 +1,5 @@
-#ifndef FMMI_SMATRIX_FMMI_HPP
-#define FMMI_SMATRIX_FMMI_HPP
+#ifndef FMMI_SMATRIX_REC_HPP
+#define FMMI_SMATRIX_REC_HPP
 
 #include "fmmi/smatrix.hpp"
 
