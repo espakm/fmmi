@@ -6,11 +6,11 @@
 namespace fmmi
 {
 
-template <typename T, bool managed_a, bool managed_b, bool managed_c>
+template <typename T, bool a_managed, bool b_managed, bool c_managed>
 inline
-void mul_rec(const dmatrix<T, managed_a>& a,
-             const dmatrix<T, managed_b>& b,
-             dmatrix<T, managed_c>& c)
+void mul_rec(const dmatrix<T, a_managed>& a,
+             const dmatrix<T, b_managed>& b,
+             dmatrix<T, c_managed>& c)
 {
     assert(a.width() == b.height()
            && a.height() == c.height()
@@ -167,9 +167,9 @@ void mul_rec(const dmatrix<T, managed_a>& a,
 }
 
 
-template <typename T, bool managed_a, bool managed_ainv>
+template <typename T, bool a_managed, bool ainv_managed>
 inline
-void inv_rec(const dmatrix<T, managed_a>& a, dmatrix<T, managed_ainv>& ainv)
+void inv_rec(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
 {
     assert(a.height() == a.width()
            && a.height() == ainv.height()

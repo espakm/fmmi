@@ -7,13 +7,13 @@ namespace fmmi
 {
 
 template <typename T, uint16_t m, uint16_t n, uint16_t p,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
-          uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride,
+          uint16_t c_y0, uint16_t c_x0, uint16_t c_stride>
 inline
-void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-             const smatrix<T, n, p, y0_b, x0_b, stride_b>& b,
-             smatrix<T, m, p, y0_c, x0_c, stride_c>& c)
+void mul_rec(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+             const smatrix<T, n, p, b_y0, b_x0, b_stride>& b,
+             smatrix<T, m, p, c_y0, c_x0, c_stride>& c)
 {
     if constexpr (m == 2 && n == 2 && p == 2)
     {
@@ -164,11 +164,11 @@ void mul_rec(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t ainv_y0, uint16_t ainv_x0, uint16_t ainv_stride>
 inline
-void inv_rec(const smatrix<T, m, m, y0_a, x0_a, stride_a>& a,
-              smatrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
+void inv_rec(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
+              smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
 {
     if constexpr (m == 1)
     {

@@ -246,12 +246,12 @@ smatrix<T, height, width> smatrix<T, height, width, y0, x0, stride>::identity()
 
 
 template <typename T, uint16_t m, uint16_t n,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
-          uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-void add(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         const smatrix<T, m, n, y0_b, x0_b, stride_b>& b,
-         smatrix<T, m, n, y0_c, x0_c, stride_c>& c)
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride,
+          uint16_t c_y0, uint16_t c_x0, uint16_t c_stride>
+void add(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+         const smatrix<T, m, n, b_y0, b_x0, b_stride>& b,
+         smatrix<T, m, n, c_y0, c_x0, c_stride>& c)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -264,12 +264,12 @@ void add(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m, uint16_t n,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
-          uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-void sub(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         const smatrix<T, m, n, y0_b, x0_b, stride_b>& b,
-         smatrix<T, m, n, y0_c, x0_c, stride_c>& c)
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride,
+          uint16_t c_y0, uint16_t c_x0, uint16_t c_stride>
+void sub(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+         const smatrix<T, m, n, b_y0, b_x0, b_stride>& b,
+         smatrix<T, m, n, c_y0, c_x0, c_stride>& c)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -282,10 +282,10 @@ void sub(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m, uint16_t n,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void add(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         smatrix<T, m, n, y0_b, x0_b, stride_b>& b)
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride>
+void add(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+         smatrix<T, m, n, b_y0, b_x0, b_stride>& b)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -298,10 +298,10 @@ void add(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m, uint16_t n,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void sub(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         smatrix<T, m, n, y0_b, x0_b, stride_b>& b)
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride>
+void sub(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+         smatrix<T, m, n, b_y0, b_x0, b_stride>& b)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -314,12 +314,12 @@ void sub(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m, uint16_t n, uint16_t p,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b,
-          uint16_t y0_c, uint16_t x0_c, uint16_t stride_c>
-void mul(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         const smatrix<T, n, p, y0_b, x0_b, stride_b>& b,
-         smatrix<T, m, p, y0_c, x0_c, stride_c>& c)
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride,
+          uint16_t c_y0, uint16_t c_x0, uint16_t c_stride>
+void mul(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+         const smatrix<T, n, p, b_y0, b_x0, b_stride>& b,
+         smatrix<T, m, p, c_y0, c_x0, c_stride>& c)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -337,10 +337,10 @@ void mul(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m, uint16_t n,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_b, uint16_t x0_b, uint16_t stride_b>
-void transpose(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
-         smatrix<T, n, m, y0_b, x0_b, stride_b>& b)
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t b_y0, uint16_t b_x0, uint16_t b_stride>
+void transpose(const smatrix<T, m, n, a_y0, a_x0, a_stride>& a,
+         smatrix<T, n, m, b_y0, b_x0, b_stride>& b)
 {
     for (uint16_t i = 0; i < m; ++i)
     {
@@ -353,11 +353,11 @@ void transpose(const smatrix<T, m, n, y0_a, x0_a, stride_a>& a,
 
 
 template <typename T, uint16_t m,
-          uint16_t y0_a, uint16_t x0_a, uint16_t stride_a,
-          uint16_t y0_ainv, uint16_t x0_ainv, uint16_t stride_ainv>
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t ainv_y0, uint16_t ainv_x0, uint16_t ainv_stride>
 //inline
-void inv(const smatrix<T, m, m, y0_a, x0_a, stride_a>& a,
-         smatrix<T, m, m, y0_ainv, x0_ainv, stride_ainv>& ainv)
+void inv(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
+         smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
 {
     if constexpr (m == 1)
     {

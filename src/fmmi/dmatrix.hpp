@@ -49,14 +49,14 @@ public:
     /// Matrix equality.
     /// Note that this implementation does not allow any 'epsilon' difference
     /// between elements.
-    template <bool managed_other>
-    bool operator==(const dmatrix<T, managed_other>& other) const;
+    template <bool other_managed>
+    bool operator==(const dmatrix<T, other_managed>& other) const;
 
-    template <bool managed_other>
-    bool operator!=(const dmatrix<T, managed_other>& other) const;
+    template <bool other_managed>
+    bool operator!=(const dmatrix<T, other_managed>& other) const;
 
-    template <bool managed_other>
-    bool equals(const dmatrix<T, managed_other>& other, double margin = 0.0) const;
+    template <bool other_managed>
+    bool equals(const dmatrix<T, other_managed>& other, double margin = 0.0) const;
 
     static
     dmatrix<T> identity(uint16_t height, uint16_t width);
@@ -172,8 +172,8 @@ dmatrix<T, false> dmatrix<T, managed>::partition(uint16_t height, uint16_t width
 
 
 template <typename T, bool managed>
-template <bool managed_other>
-bool dmatrix<T, managed>::operator==(const dmatrix<T, managed_other>& other) const
+template <bool other_managed>
+bool dmatrix<T, managed>::operator==(const dmatrix<T, other_managed>& other) const
 {
     if (width_ == stride_ && width_ == other.width_ && width_ == other.stride_)
     {
@@ -193,16 +193,16 @@ bool dmatrix<T, managed>::operator==(const dmatrix<T, managed_other>& other) con
 
 
 template <typename T, bool managed>
-template <bool managed_other>
-bool dmatrix<T, managed>::operator!=(const dmatrix<T, managed_other>& other) const
+template <bool other_managed>
+bool dmatrix<T, managed>::operator!=(const dmatrix<T, other_managed>& other) const
 {
     return !(*this == other);
 }
 
 
 template <typename T, bool managed>
-template <bool managed_other>
-bool dmatrix<T, managed>::equals(const dmatrix<T, managed_other>& other, double margin) const
+template <bool other_managed>
+bool dmatrix<T, managed>::equals(const dmatrix<T, other_managed>& other, double margin) const
 {
     for (uint16_t y = 0; y < height_; ++y)
     {
@@ -234,10 +234,10 @@ dmatrix<T> dmatrix<T, managed>::identity(uint16_t height, uint16_t width)
 }
 
 
-template <typename T, bool managed_a, bool managed_b, bool managed_c>
-void add(const dmatrix<T, managed_a>& a,
-         const dmatrix<T, managed_b>& b,
-         dmatrix<T, managed_c>& c)
+template <typename T, bool a_managed, bool b_managed, bool c_managed>
+void add(const dmatrix<T, a_managed>& a,
+         const dmatrix<T, b_managed>& b,
+         dmatrix<T, c_managed>& c)
 {
     assert(a.height() == b.height() && a.width() == b.width());
     assert(a.height() == c.height() && a.width() == c.width());
@@ -255,10 +255,10 @@ void add(const dmatrix<T, managed_a>& a,
 }
 
 
-template <typename T, bool managed_a, bool managed_b, bool managed_c>
-void sub(const dmatrix<T, managed_a>& a,
-         const dmatrix<T, managed_b>& b,
-         dmatrix<T, managed_c>& c)
+template <typename T, bool a_managed, bool b_managed, bool c_managed>
+void sub(const dmatrix<T, a_managed>& a,
+         const dmatrix<T, b_managed>& b,
+         dmatrix<T, c_managed>& c)
 {
     assert(a.height() == b.height() && a.width() == b.width());
     assert(a.height() == c.height() && a.width() == c.width());
@@ -276,8 +276,8 @@ void sub(const dmatrix<T, managed_a>& a,
 }
 
 
-template <typename T, bool managed_a, bool managed_b>
-void add(const dmatrix<T, managed_a>& a, dmatrix<T, managed_b>& b)
+template <typename T, bool a_managed, bool b_managed>
+void add(const dmatrix<T, a_managed>& a, dmatrix<T, b_managed>& b)
 {
     assert(a.height() == b.height() && a.width() == b.width());
 
@@ -294,8 +294,8 @@ void add(const dmatrix<T, managed_a>& a, dmatrix<T, managed_b>& b)
 }
 
 
-template <typename T, bool managed_a, bool managed_b>
-void sub(const dmatrix<T, managed_a>& a, dmatrix<T, managed_b>& b)
+template <typename T, bool a_managed, bool b_managed>
+void sub(const dmatrix<T, a_managed>& a, dmatrix<T, b_managed>& b)
 {
     assert(a.height() == b.height() && a.width() == b.width());
 
@@ -312,8 +312,8 @@ void sub(const dmatrix<T, managed_a>& a, dmatrix<T, managed_b>& b)
 }
 
 
-template <typename T, bool managed_a, bool managed_b, bool managed_c>
-void mul(const dmatrix<T, managed_a>& a, const dmatrix<T, managed_b>& b, dmatrix<T, managed_c>& c)
+template <typename T, bool a_managed, bool b_managed, bool c_managed>
+void mul(const dmatrix<T, a_managed>& a, const dmatrix<T, b_managed>& b, dmatrix<T, c_managed>& c)
 {
     assert(a.width() == b.height()
            && a.height() == c.height()
@@ -338,8 +338,8 @@ void mul(const dmatrix<T, managed_a>& a, const dmatrix<T, managed_b>& b, dmatrix
 }
 
 
-template <typename T, bool managed_a, bool managed_b>
-void transpose(const dmatrix<T, managed_a>& a, dmatrix<T, managed_b>& b)
+template <typename T, bool a_managed, bool b_managed>
+void transpose(const dmatrix<T, a_managed>& a, dmatrix<T, b_managed>& b)
 {
     assert(a.height() == b.width()
            && a.width() == b.height());
@@ -357,8 +357,8 @@ void transpose(const dmatrix<T, managed_a>& a, dmatrix<T, managed_b>& b)
 }
 
 
-template <typename T, bool managed_a, bool managed_ainv>
-void inv(const dmatrix<T, managed_a>& a, dmatrix<T, managed_ainv>& ainv)
+template <typename T, bool a_managed, bool ainv_managed>
+void inv(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
 {
     assert(a.width() == a.height()
            && ainv.width() == ainv.height()
