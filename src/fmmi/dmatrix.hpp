@@ -2,6 +2,7 @@
 #define FMMI_DMATRIX_HPP
 
 #include <algorithm>
+#include <iostream>
 
 namespace fmmi
 {
@@ -57,6 +58,14 @@ public:
 
     template <bool other_managed>
     bool equals(const dmatrix<T, other_managed>& other, double margin = 0.0) const;
+
+    /// Copy over values from another matrix of the same size.
+    /// Using the assignment operator (=) would be more elegant but it is
+    /// implicitly removed by the compiler.
+    template <bool other_managed>
+    void assign(const dmatrix<T, other_managed>& other);
+
+    void print() const;
 
     static
     dmatrix<T> identity(uint16_t height, uint16_t width);
@@ -220,6 +229,39 @@ bool dmatrix<T, managed>::equals(const dmatrix<T, other_managed>& other, double 
 
 
 template <typename T, bool managed>
+template <bool other_managed>
+void dmatrix<T, managed>::assign(const dmatrix<T, other_managed>& other)
+{
+    if (width_ == stride_ && width_ == other.width_ && width_ == other.stride_)
+    {
+        std::copy(&other(0, 0), &other(height_, 0), &(*this)(0, 0));
+    }
+    else
+    {
+        for (uint16_t y = 0; y < height_; ++y)
+        {
+            std::copy(&other(y, 0), &other(y, width_), &(*this)(y, 0));
+        }
+    }
+}
+
+
+template <typename T, bool managed>
+void dmatrix<T, managed>::print() const
+{
+    for (uint16_t y = 0; y < height_; ++y)
+    {
+        uint16_t x = 0;
+        for (; x < width_ - 1; ++x)
+        {
+            std::cout << (*this)(y, x) << ", ";
+        }
+        std::cout << (*this)(y, x) << std::endl;
+    }
+}
+
+
+template <typename T, bool managed>
 dmatrix<T> dmatrix<T, managed>::identity(uint16_t height, uint16_t width)
 {
     dmatrix<T> ident(height, width);
@@ -227,7 +269,7 @@ dmatrix<T> dmatrix<T, managed>::identity(uint16_t height, uint16_t width)
     {
         for (uint16_t x = 0; x < width; ++x)
         {
-            ident(y, x) = y == x ? 1 : 0;
+            ident(y, x) = y == x;
         }
     }
     return ident;
@@ -366,59 +408,48 @@ void inv(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
 
     const uint16_t m = a.width();
 
-    if (m == 1)
-    {
-        ainv(0, 0) = 1 / a(0, 0);
-    }
-    else if (m == 2)
-    {
-        const T coeff = 1.0 / (a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0));
-        ainv(0, 0) = a(1, 1) * coeff;
-        ainv(0, 1) = -a(0, 1) * coeff;
-        ainv(1, 0) = -a(1, 0) * coeff;
-        ainv(1, 1) = a(0, 0) * coeff;
-    }
-    else
-    {
-        const uint16_t n = (m % 2) == 0 ? m / 2 : 1;
-        const uint16_t p = m - n;
+    dmatrix<T> atmp(a.height(), a.width());
+    atmp.assign(a);
+    ainv.assign(dmatrix<T>::identity(m, m));
 
-        const auto& a00 = a.partition(n, n, 0, 0);
-        const auto& a01 = a.partition(n, p, 0, n);
-        const auto& a10 = a.partition(p, n, n, 0);
-        const auto& a11 = a.partition(p, p, n, n);
-
-        auto ainv00 = ainv.partition(n, n, 0, 0);
-        auto ainv01 = ainv.partition(n, p, 0, n);
-        auto ainv10 = ainv.partition(p, n, n, 0);
-        auto ainv11 = ainv.partition(p, p, n, n);
-
-        dmatrix<T> tmp(m, m);
-        auto tmp00 = tmp.partition(n, n, 0, 0);
-        auto tmp01 = tmp.partition(n, p, 0, n);
-        auto tmp10 = tmp.partition(p, n, n, 0);
-        auto tmp11 = tmp.partition(p, p, n, n);
-
-        inv(a00, tmp00);
-        mul(a10, tmp00, tmp10);
-        mul(tmp10, a01, tmp11);
-        sub(a11, tmp11);
-        inv(tmp11, ainv11);
-
-        mul(tmp00, a01, tmp01);
-        mul(tmp01, ainv11, ainv01);
-
-        mul(ainv01, tmp10, ainv00);
-        add(tmp00, ainv00);
-
-        mul(ainv11, tmp10, ainv10);
-
-        for (uint16_t i = 0; i < n; ++i)
+    for (uint16_t row = 0, lead = 0; row < m && lead < 2 * m; ++row, ++lead) {
+        uint16_t i = row;
+        while ((lead < m ? atmp(i, lead) : ainv(i, lead - m)) == 0)
         {
-            for (uint16_t j = 0; j < p; ++j)
+            if (++i == m)
             {
-                ainv01(i, j) *= -1;
-                ainv10(j, i) *= -1;
+                i = row;
+                if (++lead == 2 * m)
+                {
+                    return;
+                }
+            }
+        }
+        for (uint16_t column = 0; column < m; ++column)
+        {
+            std::swap(atmp(i, column), atmp(row, column));
+            std::swap(ainv(i, column), ainv(row, column));
+        }
+        if ((lead < m ? atmp(row, lead) : ainv(row, lead - m)) != 0)
+        {
+            auto f = lead < m ? atmp(row, lead) : ainv(row, lead - m);
+            for (uint16_t column = 0; column < m; ++column)
+            {
+                atmp(row, column) /= f;
+                ainv(row, column) /= f;
+            }
+        }
+        for (uint16_t j = 0; j < m; ++j)
+        {
+            if (j == row)
+            {
+                continue;
+            }
+            auto f = lead < m ? atmp(j, lead) : ainv(j, lead - m);
+            for (uint16_t column = 0; column < m; ++column)
+            {
+                atmp(j, column) -= f * atmp(row, column);
+                ainv(j, column) -= f * ainv(row, column);
             }
         }
     }
