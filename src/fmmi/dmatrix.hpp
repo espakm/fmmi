@@ -108,7 +108,7 @@ dmatrix<T, managed>::dmatrix(uint16_t height, uint16_t width, std::initializer_l
 template <typename T, bool managed>
 dmatrix<T, managed>::~dmatrix()
 {
-    if (managed)
+    if constexpr (managed)
     {
         delete[] data_;
     }
