@@ -417,7 +417,8 @@ void inv(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
          smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
 {
     smatrix<T, m, m> atmp = a;
-    ainv = smatrix<T, m, m>::identity();
+    const auto& id = smatrix<T, m, m>::identity();
+    ainv = id;
 
     for (uint16_t row = 0, lead = 0; row < m && lead < 2 * m; ++row, ++lead) {
         uint16_t i = row;
@@ -428,7 +429,7 @@ void inv(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
                 i = row;
                 if (++lead == 2 * m)
                 {
-                    return;
+                    goto done;
                 }
             }
         }
@@ -437,28 +438,35 @@ void inv(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
             std::swap(atmp(i, column), atmp(row, column));
             std::swap(ainv(i, column), ainv(row, column));
         }
-        if ((lead < m ? atmp(row, lead) : ainv(row, lead - m)) != 0)
+        T f = lead < m ? atmp(row, lead) : ainv(row, lead - m);
+        if (f == 0)
         {
-            auto f = lead < m ? atmp(row, lead) : ainv(row, lead - m);
-            for (uint16_t column = 0; column < m; ++column)
-            {
-                atmp(row, column) /= f;
-                ainv(row, column) /= f;
-            }
+            throw std::logic_error("Matrix is not invertible.");
         }
-        for (uint16_t j = 0; j < m; ++j)
+        for (uint16_t column = 0; column < m; ++column)
         {
-            if (j == row)
+            atmp(row, column) /= f;
+            ainv(row, column) /= f;
+        }
+        for (i = 0; i < m; ++i)
+        {
+            if (i == row)
             {
                 continue;
             }
-            auto f = lead < m ? atmp(j, lead) : ainv(j, lead - m);
+            f = lead < m ? atmp(i, lead) : ainv(i, lead - m);
             for (uint16_t column = 0; column < m; ++column)
             {
-                atmp(j, column) -= f * atmp(row, column);
-                ainv(j, column) -= f * ainv(row, column);
+                atmp(i, column) -= f * atmp(row, column);
+                ainv(i, column) -= f * ainv(row, column);
             }
         }
+    }
+    done:;
+
+    if (atmp != id)
+    {
+        throw std::logic_error("Matrix is not invertible.");
     }
 }
 

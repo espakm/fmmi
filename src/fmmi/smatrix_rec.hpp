@@ -172,19 +172,28 @@ void inv_rec(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
 {
     if constexpr (m == 1)
     {
-        ainv(0, 0) = 1 / a(0, 0);
+        const T f = a(0, 0);
+        if (f == 0)
+        {
+            throw std::logic_error("Matrix is not invertible.");
+        }
+        ainv(0, 0) = 1 / f;
     }
     else if constexpr (m == 2)
     {
-        const T coeff = 1.0 / (a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0));
-        ainv(0, 0) = a(1, 1) * coeff;
-        ainv(0, 1) = -a(0, 1) * coeff;
-        ainv(1, 0) = -a(1, 0) * coeff;
-        ainv(1, 1) = a(0, 0) * coeff;
+        const T f = a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0);
+        if (f == 0)
+        {
+            throw std::logic_error("Matrix is not invertible.");
+        }
+        ainv(0, 0) = a(1, 1) / f;
+        ainv(0, 1) = -a(0, 1) / f;
+        ainv(1, 0) = -a(1, 0) / f;
+        ainv(1, 1) = a(0, 0) / f;
     }
     else
     {
-        constexpr uint16_t n = (m % 2) == 0 ? m / 2 : 1;
+        constexpr uint16_t n = m / 2;
         constexpr uint16_t p = m - n;
 
         const auto& a00 = a.template partition<n, n, 0, 0>();

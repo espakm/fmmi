@@ -304,6 +304,12 @@ TEST_CASE("inv dmatrix", "[inv][dmatrix]")
     mul(a, a_inv, a_a_inv);
     CHECK(a_a_inv.equals(identity1x1, 1e-1));
 
+    f32dmx_t a0(1, 1, {
+        0,
+    });
+    f32dmx_t a0_inv(1, 1);
+    CHECK_THROWS_WITH(inv(a0, a0_inv), "Matrix is not invertible.");
+
     f32dmx_t b(2, 2, {
         5, 6,
         2, 2,
@@ -326,6 +332,13 @@ TEST_CASE("inv dmatrix", "[inv][dmatrix]")
     f32dmx_t b_b_inv(2, 2);
     mul(b, b_inv, b_b_inv);
     CHECK(b_b_inv.equals(identity2x2, 1e-6));
+
+    f32dmx_t b0(2, 2, {
+        2, 4,
+        4, 8,
+    });
+    f32dmx_t b0_inv(2, 2);
+    CHECK_THROWS_WITH(inv(b0, b0_inv), "Matrix is not invertible.");
 
     f32dmx_t c(4, 4, {
         5, 6, 6, 8,
@@ -353,6 +366,15 @@ TEST_CASE("inv dmatrix", "[inv][dmatrix]")
     f32dmx_t c_c_inv(4, 4);
     mul(c, c_inv, c_c_inv);
     CHECK(c_c_inv.equals(identity4x4, 1e-4));
+
+    f32dmx_t c0(4, 4, {
+        5, 6, 6, 8,
+        2, 2, 2, 8,
+        6, 6, 2, 8,
+        -13, -14, -10, -24,
+    });
+    f32dmx_t c0_inv(4, 4);
+    CHECK_THROWS_WITH(inv(c0, c0_inv), "Matrix is not invertible.");
 
     f32dmx_t d(3, 3, {
         0, -3, -2,

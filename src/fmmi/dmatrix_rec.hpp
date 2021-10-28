@@ -179,19 +179,28 @@ void inv_rec(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
 
     if (m == 1)
     {
-        ainv(0, 0) = 1 / a(0, 0);
+        const T f = a(0, 0);
+        if (f == 0)
+        {
+            throw std::logic_error("Matrix is not invertible.");
+        }
+        ainv(0, 0) = 1 / f;
     }
     else if (m == 2)
     {
-        const T coeff = 1.0 / (a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0));
-        ainv(0, 0) = a(1, 1) * coeff;
-        ainv(0, 1) = -a(0, 1) * coeff;
-        ainv(1, 0) = -a(1, 0) * coeff;
-        ainv(1, 1) = a(0, 0) * coeff;
+        const T f = a(0, 0) * a(1, 1) - a(0, 1) * a(1, 0);
+        if (f == 0)
+        {
+            throw std::logic_error("Matrix is not invertible.");
+        }
+        ainv(0, 0) = a(1, 1) / f;
+        ainv(0, 1) = -a(0, 1) / f;
+        ainv(1, 0) = -a(1, 0) / f;
+        ainv(1, 1) = a(0, 0) / f;
     }
     else
     {
-        const uint16_t n = (m % 2) == 0 ? m / 2 : 1;
+        const uint16_t n = m / 2;
         const uint16_t p = m - n;
 
         const auto& a00 = a.partition(n, n, 0, 0);
