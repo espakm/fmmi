@@ -375,8 +375,6 @@ TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
     mul(d, d_inv, d_d_inv);
     CHECK(d_d_inv.equals(identity4x4, 1e-5));
 
-    return;
-
     f32smx_t<3, 3> e{
         0, -3, -2,
         1, -4, -2,
@@ -392,15 +390,15 @@ TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
     f32smx_t<3, 3> identity3x3 = f32smx_t<3, 3>::identity();
     f32smx_t<3, 3> e_expected_e_inv;
     mul(e, expected_e_inv, e_expected_e_inv);
-    CHECK(e_expected_e_inv.equals(identity3x3, 1e-7));
+    CHECK(e_expected_e_inv.equals(identity3x3, 1e-6));
 
     f32smx_t<3, 3> e_inv;
     inv_rec(e, e_inv);
-    CHECK(e_inv.equals(expected_e_inv, 1e-7));
+    CHECK(e_inv.equals(expected_e_inv, 1e-5));
 
     f32smx_t<3, 3> e_e_inv;
     mul(e, e_inv, e_e_inv);
-    CHECK(e_e_inv.equals(identity3x3, 1e-7));
+    CHECK(e_e_inv.equals(identity3x3, 1e-5));
 }
 
 

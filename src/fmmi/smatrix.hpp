@@ -5,33 +5,10 @@
 #include <cstdint>
 #include <iostream>
 
+#include "fmmi/common.hpp"
+
 namespace fmmi
 {
-
-constexpr uint16_t log_2(uint16_t n)
-{
-    return n < 2 ? 0 : log_2(n / 2) + 1;
-}
-
-
-constexpr std::size_t exp_2(uint16_t n)
-{
-    return n == 0 ? 1 : 2 * exp_2(n - 1);
-}
-
-
-constexpr std::size_t padded_size(uint16_t n)
-{
-    return n < 2 ? 1 : exp_2(log_2(n - 1) + 1);
-}
-
-
-constexpr std::size_t padded_size(uint16_t height, uint16_t width)
-{
-    auto ps = padded_size(height > width ? height : width);
-    return ps * ps;
-}
-
 
 template <typename T, uint16_t height, uint16_t width,
           uint16_t y0, uint16_t x0, uint16_t stride>
@@ -77,8 +54,8 @@ public:
 
     smatrix(std::initializer_list<T> init_list);
 
-    template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-    smatrix(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other);
+    template <uint16_t other_height, uint16_t other_width, uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
+    smatrix(const smatrix<T, other_height, other_width, other_y0, other_x0, other_stride>& other);
 
     inline
     const T& operator()(uint16_t y, uint16_t x) const;
@@ -106,8 +83,8 @@ public:
     template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
     bool equals(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other, double margin = 0.0) const;
 
-    template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-    smatrix<T, height, width, y0, x0, stride>& operator=(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other);
+    template <uint16_t other_height, uint16_t other_width, uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
+    smatrix<T, height, width, y0, x0, stride>& operator=(const smatrix<T, other_height, other_width, other_y0, other_x0, other_stride>& other);
 
     void print() const;
 
@@ -156,17 +133,24 @@ smatrix<T, height, width, y0, x0, stride>::smatrix(std::initializer_list<T> init
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
-template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-smatrix<T, height, width, y0, x0, stride>::smatrix(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other)
+template <uint16_t other_height, uint16_t other_width, uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
+smatrix<T, height, width, y0, x0, stride>::smatrix(const smatrix<T, other_height, other_width, other_y0, other_x0, other_stride>& other)
 {
-    if constexpr (width == stride && width == other_stride)
+    if constexpr (width == other_width
+            && height == other_height
+            && width == stride
+            && other_width == other_stride)
     {
         std::copy(&other(0, 0), &other(height, 0), &(*this)(0, 0));
     }
-
-    for (uint16_t y = 0; y < height; ++y)
+    else
     {
-        std::copy(&other(y, 0), &other(y, width), &(*this)(y, 0));
+        uint16_t h = std::min(height, other_height);
+        uint16_t w = std::min(width, other_width);
+        for (uint16_t y = 0; y < h; ++y)
+        {
+            std::copy(&other(y, 0), &other(y, w), &(*this)(y, 0));
+        }
     }
 }
 
@@ -256,17 +240,24 @@ bool smatrix<T, height, width, y0, x0, stride>::equals(
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
-template <uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
-smatrix<T, height, width, y0, x0, stride>& smatrix<T, height, width, y0, x0, stride>::operator=(const smatrix<T, height, width, other_y0, other_x0, other_stride>& other)
+template <uint16_t other_height, uint16_t other_width, uint16_t other_y0, uint16_t other_x0, uint16_t other_stride>
+smatrix<T, height, width, y0, x0, stride>& smatrix<T, height, width, y0, x0, stride>::operator=(const smatrix<T, other_height, other_width, other_y0, other_x0, other_stride>& other)
 {
-    if constexpr (width == stride && width == other_stride)
+    if constexpr (width == other_width
+            && height == other_height
+            && width == stride
+            && other_width == other_stride)
     {
         std::copy(&other(0, 0), &other(height, 0), &(*this)(0, 0));
     }
-
-    for (uint16_t y = 0; y < height; ++y)
+    else
     {
-        std::copy(&other(y, 0), &other(y, width), &(*this)(y, 0));
+        uint16_t h = std::min(height, other_height);
+        uint16_t w = std::min(width, other_width);
+        for (uint16_t y = 0; y < h; ++y)
+        {
+            std::copy(&other(y, 0), &other(y, w), &(*this)(y, 0));
+        }
     }
 
     return *this;

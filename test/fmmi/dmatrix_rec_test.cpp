@@ -375,8 +375,6 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
     mul(d, d_inv, d_d_inv);
     CHECK(d_d_inv.equals(identity4x4, 1e-5));
 
-    return;
-
     f32dmx_t e(3, 3, {
         0, -3, -2,
         1, -4, -2,
@@ -392,15 +390,15 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
     f32dmx_t identity3x3 = f32dmx_t::identity(3, 3);
     f32dmx_t e_expected_e_inv(3, 3);
     mul(e, expected_e_inv, e_expected_e_inv);
-    CHECK(e_expected_e_inv.equals(identity3x3, 1e-4));
+    CHECK(e_expected_e_inv.equals(identity3x3, 1e-6));
 
     f32dmx_t e_inv(3, 3);
     inv_rec(e, e_inv);
-    CHECK(e_inv.equals(expected_e_inv, 1e-4));
+    CHECK(e_inv.equals(expected_e_inv, 1e-5));
 
     f32dmx_t e_e_inv(3, 3);
     mul(e, e_inv, e_e_inv);
-    CHECK(e_e_inv.equals(identity3x3, 1e-4));
+    CHECK(e_e_inv.equals(identity3x3, 1e-5));
 }
 
 

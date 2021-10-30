@@ -1,4 +1,5 @@
 set(FMMI_SOURCES
+    fmmi/common.hpp
     fmmi/dmatrix.hpp
     fmmi/dmatrix_rec.hpp
     fmmi/smatrix.hpp

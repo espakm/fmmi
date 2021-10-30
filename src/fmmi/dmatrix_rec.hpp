@@ -1,6 +1,7 @@
 #ifndef FMMI_DMATRIX_REC_HPP
 #define FMMI_DMATRIX_REC_HPP
 
+#include "fmmi/common.hpp"
 #include "fmmi/dmatrix.hpp"
 
 namespace fmmi
@@ -170,6 +171,52 @@ void mul_rec(const dmatrix<T, a_managed>& a,
 template <typename T, bool a_managed, bool ainv_managed>
 inline
 void inv_rec(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
+{
+    assert(a.height() == a.width()
+           && a.height() == ainv.height()
+           && ainv.height() == ainv.width());
+
+    const uint16_t m = a.height();
+    const uint16_t p = padded_size(m);
+
+    if (p == m)
+    {
+        inv_rec_pow_2(a, ainv);
+    }
+    else
+    {
+        /// Add 0 and 1 elements from the right and the bottom, like in the
+        /// unity matrix. Matrix is copied that is inefficient.
+        dmatrix<T> a2(p, p);
+        a2.assign(a);
+        for (uint16_t i = m; i < p; ++i)
+        {
+            uint16_t j = 0;
+            for (; j < m; ++j)
+            {
+                a2(i, j) = 0;
+                a2(j, i) = 0;
+            }
+            for (; j < p; ++j)
+            {
+                a2(i, j) = i == j;
+            }
+        }
+
+        dmatrix<T> ainv2(p, p);
+        inv_rec_pow_2(a2, ainv2);
+
+        /// The result is in the mxm top-left partition of the new matrix.
+        /// Sadly, it needs to be copied back to the output argument that
+        /// is inefficient.
+        ainv.assign(ainv2.partition(m, m));
+    }
+}
+
+
+template <typename T, bool a_managed, bool ainv_managed>
+inline
+void inv_rec_pow_2(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
 {
     assert(a.height() == a.width()
            && a.height() == ainv.height()

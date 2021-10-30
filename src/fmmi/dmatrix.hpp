@@ -232,15 +232,20 @@ template <typename T, bool managed>
 template <bool other_managed>
 void dmatrix<T, managed>::assign(const dmatrix<T, other_managed>& other)
 {
-    if (width_ == stride_ && width_ == other.width_ && width_ == other.stride_)
+    if (width_ == other.width_
+        && height_ == other.height_
+        && width_ == stride_
+        && width_ == other.stride_)
     {
         std::copy(&other(0, 0), &other(height_, 0), &(*this)(0, 0));
     }
     else
     {
-        for (uint16_t y = 0; y < height_; ++y)
+        uint16_t h = std::min(height_, other.height_);
+        uint16_t w = std::min(width_, other.width_);
+        for (uint16_t y = 0; y < h; ++y)
         {
-            std::copy(&other(y, 0), &other(y, width_), &(*this)(y, 0));
+            std::copy(&other(y, 0), &other(y, w), &(*this)(y, 0));
         }
     }
 }

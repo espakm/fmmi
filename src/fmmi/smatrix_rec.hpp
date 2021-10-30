@@ -170,6 +170,49 @@ inline
 void inv_rec(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
               smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
 {
+    constexpr uint16_t p = padded_size(m);
+
+    if constexpr (p == m)
+    {
+        inv_rec_pow_2(a, ainv);
+    }
+    else
+    {
+        /// Add 0 and 1 elements from the right and the bottom, like in the
+        /// unity matrix. Matrix is copied that is inefficient.
+        smatrix<T, p, p> a2 = a;
+        for (uint16_t i = m; i < p; ++i)
+        {
+            uint16_t j = 0;
+            for (; j < m; ++j)
+            {
+                a2(i, j) = 0;
+                a2(j, i) = 0;
+            }
+            for (; j < p; ++j)
+            {
+                a2(i, j) = i == j;
+            }
+        }
+
+        smatrix<T, p, p> ainv2;
+        inv_rec_pow_2(a2, ainv2);
+
+        /// The result is in the mxm top-left partition of the new matrix.
+        /// Sadly, it needs to be copied back to the output argument that
+        /// is inefficient.
+        ainv = ainv2.template partition<m, m>();
+    }
+}
+
+
+template <typename T, uint16_t m,
+          uint16_t a_y0, uint16_t a_x0, uint16_t a_stride,
+          uint16_t ainv_y0, uint16_t ainv_x0, uint16_t ainv_stride>
+inline
+void inv_rec_pow_2(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
+                   smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
+{
     if constexpr (m == 1)
     {
         const T f = a(0, 0);
@@ -212,11 +255,11 @@ void inv_rec(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
         auto& tmp10 = tmp.template partition<p, n, n, 0>();
         auto& tmp11 = tmp.template partition<p, p, n, n>();
 
-        inv_rec(a00, tmp00);
+        inv_rec_pow_2(a00, tmp00);
         mul_rec(a10, tmp00, tmp10);
         mul_rec(tmp10, a01, tmp11);
         sub(a11, tmp11);
-        inv_rec(tmp11, ainv11);
+        inv_rec_pow_2(tmp11, ainv11);
 
         mul_rec(tmp00, a01, tmp01);
         mul_rec(tmp01, ainv11, ainv01);
