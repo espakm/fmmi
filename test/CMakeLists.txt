@@ -1,6 +1,7 @@
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/catch2)
 
 set(TEST_SOURCES
+    fmmi/common_test.cpp
     fmmi/dmatrix_test.cpp
     fmmi/smatrix_test.cpp
     fmmi/dmatrix_rec_test.cpp

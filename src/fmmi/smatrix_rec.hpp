@@ -170,7 +170,7 @@ inline
 void inv_rec(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
               smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
 {
-    constexpr uint16_t p = padded_size(m);
+    constexpr uint16_t p = pow_2_upper_bound(m);
 
     if constexpr (p == m)
     {

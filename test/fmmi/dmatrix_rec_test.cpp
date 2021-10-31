@@ -108,9 +108,9 @@ static f64dmx_t f64dmx_1(S, S), f64dmx_2(S, S), f64dmx_3(S, S);
 static f64dmx_t f128dmx_1(S, S), f128dmx_2(S, S), f128dmx_3(S, S);
 
 static
-struct static_init
+struct dmatric_rec_test_static_init
 {
-    static_init()
+    dmatric_rec_test_static_init()
     {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -135,7 +135,7 @@ struct static_init
             }
         }
     }
-} static_init;
+} dmatric_rec_test_static_init;
 
 
 TEMPLATE_TEST_CASE_SIG("mul_rec dmatrix benchmark", "[mul_rec][dmatrix][benchmark]",
@@ -299,6 +299,12 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
     mul(a, a_inv, a_a_inv);
     CHECK(a_a_inv.equals(identity1x1));
 
+    f32dmx_t a0(1, 1, {
+        0,
+    });
+    f32dmx_t a0_inv(1, 1);
+    CHECK_THROWS_WITH(inv_rec(a0, a0_inv), "Matrix is not invertible.");
+
     f32dmx_t b(2, 2, {
         5, 6,
         2, 2,
@@ -321,6 +327,13 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
     f32dmx_t b_b_inv(2, 2);
     mul(b, b_inv, b_b_inv);
     CHECK(b_b_inv.equals(identity2x2, 1e-7));
+
+    f32dmx_t b0(2, 2, {
+        2, 4,
+        4, 8,
+    });
+    f32dmx_t b0_inv(2, 2);
+    CHECK_THROWS_WITH(inv_rec(b0, b0_inv), "Matrix is not invertible.");
 
     f32dmx_t c(4, 4, {
         5, 6, 6, 8,
@@ -348,6 +361,15 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
     f32dmx_t c_c_inv(4, 4);
     mul(c, c_inv, c_c_inv);
     CHECK(c_c_inv.equals(identity4x4, 1e-7));
+
+    f32dmx_t c0(4, 4, {
+        5, 6, 6, 8,
+        2, 2, 2, 8,
+        6, 6, 2, 8,
+        -13, -14, -10, -24,
+    });
+    f32dmx_t c0_inv(4, 4);
+    CHECK_THROWS_WITH(inv_rec(c0, c0_inv), "Matrix is not invertible.");
 
     f32dmx_t d(4, 4, {
         0, -3, -2, 0,

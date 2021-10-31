@@ -177,7 +177,7 @@ void inv_rec(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
            && ainv.height() == ainv.width());
 
     const uint16_t m = a.height();
-    const uint16_t p = padded_size(m);
+    const uint16_t p = pow_2_upper_bound(m);
 
     if (p == m)
     {
