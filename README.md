@@ -5,6 +5,7 @@ based on the algorithms described in the following article:
 
   - https://www.lehigh.edu/~gi02/m242/08linstras.pdf
 
+
 ### Underlying data types
 
 Since the algorithm is recursive and it relies on matrix partitioning, it was
@@ -25,25 +26,26 @@ expression. This allows more flexibility, but it comes at a price that partition
 selection has a certain run-time cost. For any sub-matrix, a new object needs to
 be created that stores the memory address of the first (top-left) element of the
 matrix, along with the height, width and stride of the matrix. The stride is the
-distance of the matrix rows as stored in the memory. Using this info lets us
-working with blocks of matrices at their original location, eliminating the need
+distance of the matrix rows as stored in the memory. Using this information lets
+us work with blocks of matrices at their original location, eliminating the need
 for copying elements to a contiguous memory area.
 
 Not surprisingly, benchmarking showed better performance using `smatrix` instead
 of `dmatrix`.
 
+
 ### Differences to the original algorithms
 
-The implementation differs from the algorithm that is described in the referred
+The implementations differ from the algorithms that are described in the referred
 article, in a couple of ways.
 
 For matrices whose height or width is not a power of 2, the article suggests to
 add a "padding" of zeros on the right and at the bottom, so that the "padded"
 matrix is the smallest square matrix whose height and width is the same power of
-2. It is shown that this does not alter the results of the computation and does
-not increase the computation time in terms of algorithmic complexity.
+2. It is shown that this does not alter the results of the multiplication and it
+does not increase the computation time in terms of algorithmic complexity.
 
-In practical implementation, this "padding" can be achieved either by allocating
+In a practical implementation, this padding can be achieved either by allocating
 a larger space for the matrix and filling up the superseding area with zeros, or
 by modifying the indexing operator to return zeros when an "outsider" element is
 referred to. Both solutions have significant run-time costs.
@@ -58,6 +60,15 @@ partition of the matrix and then the results have been combined.
 This implementation performed much faster for (2^n-1)x(2^n-1) sized matrices
 than for (2^n)x(2^n) sized ones what approves that using padding would have been
 impractical.
+
+Three implementations are provided for matrix multiplication:
+
+  - `mul()`: classic, iterative matrix multiplication algorithm
+  - `mul_rec()`: recursive matrix multiplication as described in the article,
+      extending the matrix to power of 2 size and filling up with zeros before
+      the recursion starts
+  - `mul_rec_part()`: recursive matrix multiplication as described above,
+      splitting off left or top vectors from odd-sized matrices.
 
 This method of partitioning has been applied only for the multiplication of odd
 sized matrices. For matrix inversion, the matrices have been extended with the
@@ -90,6 +101,14 @@ The implemented algorithm uses the recursive matrix multiplication algorithm.
 
 For comparison, a classic, iterative algorithm has also been implemented, using
 Gauss-Jordan elimination.
+
+The two implementations provided for matrix inversion are:
+
+  - `inv()`: classic, iterative matrix inversion with Gauss-Jordan elimination.
+  - `inv_rec()`: recursive inversion as describe in the article with the
+      modification discussed above to make it work for not positive-definite
+      and symmetric matrices.
+
 
 ### Testing and benchmarking
 
@@ -145,3 +164,48 @@ matrices can be performed by the following command:
 ```
 ./test/test "[smatrix][inv_rec][benchmark]"
 ```
+
+## Evaluation
+
+Performance has been measured in terms of speed for six matrix element types
+(`int16_t`, `int32_t`, `int64_t`, `float`, `double` and `long double`) and 16
+matrix sizes (1x1, 2x2, 3x3, 4x4, 7x7, 8x8, 15x15, 16x16, 31x31, 32x32, 63x63,
+64x64, 127x127, 128x128, 255x255 and 256x256) and for both matrix type
+implementations (`dmatrix` and `smatrix`).
+
+First, the iterative and the recursive *multiplication* algorithms have been
+executed alternatingly, for each element type and size combinations with the
+`dmatrix` implementation. Then the same has been repeated with the interative
+and recursive *inversion* algorithms, also with `dmatrix` arguments. After the
+process has been completed, it has been repeated with the `smatrix` functions.
+
+The results obtained with AppleClang 12.0.0 and GCC 11.2.0 can be found in the
+following file:
+
+  - `benchmark.ods`
+
+The cells of the spreadsheet have been highlighted in green where a recursive
+algorithm executed faster.
+
+The first observation is that the smatrix algorithms were almost always much
+faster than their dmatrix equivalents. For large matrices and for the iterative
+algorithms, the difference was less significant between the smatrix and dmatrix
+versions, but for the recursive algorithms, the smatrix variants often performed
+over 80% faster than the dmatrix ones.
+
+The most interesting question, however, is whether there are cases when the
+recursive algorithms can outperform the iterative ones. It can be observed that
+the advantage of the recursive algorithms came out in particular situations and
+mainly with smatrix arguments:
+
+  - multiplication of 2x2 matrices (both smatrix and dmatrix)
+  - multiplication of `int64_t` smatrix objects from size 15x15 up
+  - multiplication of any smatrix objects from size 31x31 up
+  - multiplication of any 127x127 and 255x255 dmatrix objects without padding
+  - inversion of most dmatrix and smatrix objects up to size 4x4
+  - inversion of most smatrix objects up to size 16x16
+  - inversion of `int64_t` smatrix objects from size 31x31 up.
+
+The rational explanation of the observations is that the recursive algorithms
+performed better when the cost of recursion could be eliminated or outweighed by
+the benefit of reduced algorithmic complexity.

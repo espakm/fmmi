@@ -96,6 +96,10 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix equals up to 7x7", "[mul_rec][smatrix][e
     mul_rec(sa, sb, sd);
 
     CHECK(sc == sd);
+
+    mul_rec_part(sa, sb, sd);
+
+    CHECK(sc == sd);
 }
 
 
@@ -204,6 +208,11 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
         mul_rec(i16smx_a, i16smx_b, i16smx_c);
     };
 
+    BENCHMARK("mul_rec_part i16smx_t")
+    {
+        mul_rec_part(i16smx_a, i16smx_b, i16smx_c);
+    };
+
     const auto& i32smx_a = i32smx_1.partition<m, n>();
     const auto& i32smx_b = i32smx_2.partition<n, p>();
     auto& i32smx_c = i32smx_3.partition<m, p>();
@@ -216,6 +225,11 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
     BENCHMARK("mul_rec i32smx_t")
     {
         mul_rec(i32smx_a, i32smx_b, i32smx_c);
+    };
+
+    BENCHMARK("mul_rec_part i32smx_t")
+    {
+        mul_rec_part(i32smx_a, i32smx_b, i32smx_c);
     };
 
     const auto& i64smx_a = i64smx_1.partition<m, n>();
@@ -232,6 +246,11 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
         mul_rec(i64smx_a, i64smx_b, i64smx_c);
     };
 
+    BENCHMARK("mul_rec_part i64smx_t")
+    {
+        mul_rec_part(i64smx_a, i64smx_b, i64smx_c);
+    };
+
     const auto& f32smx_a = f32smx_1.partition<m, n>();
     const auto& f32smx_b = f32smx_2.partition<n, p>();
     auto& f32smx_c = f32smx_3.partition<m, p>();
@@ -244,6 +263,11 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
     BENCHMARK("mul_rec f32smx_t")
     {
         mul_rec(f32smx_a, f32smx_b, f32smx_c);
+    };
+
+    BENCHMARK("mul_rec_part f32smx_t")
+    {
+        mul_rec_part(f32smx_a, f32smx_b, f32smx_c);
     };
 
     const auto& f64smx_a = f64smx_1.partition<m, n>();
@@ -260,6 +284,11 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
         mul_rec(f64smx_a, f64smx_b, f64smx_c);
     };
 
+    BENCHMARK("mul_rec_part f64smx_t")
+    {
+        mul_rec_part(f64smx_a, f64smx_b, f64smx_c);
+    };
+
     const auto& f128smx_a = f128smx_1.partition<m, n>();
     const auto& f128smx_b = f128smx_2.partition<n, p>();
     auto& f128smx_c = f128smx_3.partition<m, p>();
@@ -272,6 +301,11 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
     BENCHMARK("mul_rec f128smx_t")
     {
         mul_rec(f128smx_a, f128smx_b, f128smx_c);
+    };
+
+    BENCHMARK("mul_rec_part f128smx_t")
+    {
+        mul_rec_part(f128smx_a, f128smx_b, f128smx_c);
     };
 }
 
