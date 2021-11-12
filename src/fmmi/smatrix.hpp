@@ -88,8 +88,7 @@ public:
 
     void print() const;
 
-    static
-    smatrix<T, height, width> identity();
+    void set_identity();
 
 private:
     static constexpr
@@ -280,17 +279,15 @@ void smatrix<T, height, width, y0, x0, stride>::print() const
 
 
 template <typename T, uint16_t height, uint16_t width, uint16_t y0, uint16_t x0, uint16_t stride>
-smatrix<T, height, width> smatrix<T, height, width, y0, x0, stride>::identity()
+void smatrix<T, height, width, y0, x0, stride>::set_identity()
 {
-    smatrix<T, height, width> ident;
     for (uint16_t y = 0; y < height; ++y)
     {
         for (uint16_t x = 0; x < width; ++x)
         {
-            ident(y, x) = y == x;
+            (*this)(y, x) = y == x;
         }
     }
-    return ident;
 }
 
 
@@ -408,10 +405,12 @@ void inv(const smatrix<T, m, m, a_y0, a_x0, a_stride>& a,
          smatrix<T, m, m, ainv_y0, ainv_x0, ainv_stride>& ainv)
 {
     smatrix<T, m, m> atmp = a;
-    const auto& id = smatrix<T, m, m>::identity();
+    smatrix<T, m, m> id;
+    id.set_identity();
     ainv = id;
 
-    for (uint16_t row = 0, lead = 0; row < m && lead < 2 * m; ++row, ++lead) {
+    for (uint16_t row = 0, lead = 0; row < m && lead < 2 * m; ++row, ++lead)
+    {
         uint16_t i = row;
         while ((lead < m ? atmp(i, lead) : ainv(i, lead - m)) == 0)
         {

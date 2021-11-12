@@ -67,8 +67,7 @@ public:
 
     void print() const;
 
-    static
-    dmatrix<T> identity(uint16_t height, uint16_t width);
+    void set_identity();
 
 private:
     dmatrix(const T* data, uint16_t height, uint16_t width, uint16_t stride);
@@ -267,17 +266,15 @@ void dmatrix<T, managed>::print() const
 
 
 template <typename T, bool managed>
-dmatrix<T> dmatrix<T, managed>::identity(uint16_t height, uint16_t width)
+void dmatrix<T, managed>::set_identity()
 {
-    dmatrix<T> ident(height, width);
-    for (uint16_t y = 0; y < height; ++y)
+    for (uint16_t y = 0; y < height_; ++y)
     {
-        for (uint16_t x = 0; x < width; ++x)
+        for (uint16_t x = 0; x < width_; ++x)
         {
-            ident(y, x) = y == x;
+            (*this)(y, x) = y == x;
         }
     }
-    return ident;
 }
 
 
@@ -415,10 +412,12 @@ void inv(const dmatrix<T, a_managed>& a, dmatrix<T, ainv_managed>& ainv)
 
     dmatrix<T> atmp(a.height(), a.width());
     atmp.assign(a);
-    const auto& id = dmatrix<T>::identity(m, m);
+    dmatrix<T> id(m, m);
+    id.set_identity();
     ainv.assign(id);
 
-    for (uint16_t row = 0, lead = 0; row < m && lead < 2 * m; ++row, ++lead) {
+    for (uint16_t row = 0, lead = 0; row < m && lead < 2 * m; ++row, ++lead)
+    {
         uint16_t i = row;
         while ((lead < m ? atmp(i, lead) : ainv(i, lead - m)) == 0)
         {

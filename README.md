@@ -79,7 +79,7 @@ The other main difference is related to the matrix inversion algorithm. In the
 paper an assumption is made that matrix A (whose inverse is to be determined) is
 symmetric and positive definite. The described algorithm uses this assumption.
 
-However, not every invertible matrix have these properties. For instance, the
+However, not every invertible matrix has these properties. For instance, the
 following matrix is invertible but not symmetric:
 
 ```

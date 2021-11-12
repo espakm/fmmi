@@ -312,6 +312,13 @@ TEMPLATE_TEST_CASE_SIG("mul_rec smatrix benchmark", "[mul_rec][smatrix][benchmar
 
 TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
 {
+    f32smx_t<4, 4> identity;
+    identity.set_identity();
+    const auto& identity1x1 = identity.partition<1, 1>();
+    const auto& identity2x2 = identity.partition<2, 2>();
+    const auto& identity3x3 = identity.partition<3, 3>();
+    const auto& identity4x4 = identity.partition<4, 4>();
+
     f32smx_t<1, 1> a{
         5,
     };
@@ -320,7 +327,6 @@ TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
         0.2,
     };
 
-    f32smx_t<1, 1> identity1x1 = f32smx_t<1, 1>::identity();
     f32smx_t<1, 1> a_expected_a_inv;
     mul(a, expected_a_inv, a_expected_a_inv);
     CHECK(a_expected_a_inv.equals(identity1x1, 0.001));
@@ -349,7 +355,6 @@ TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
         1, -2.5,
     };
 
-    f32smx_t<2, 2> identity2x2 = f32smx_t<2, 2>::identity();
     f32smx_t<2, 2> b_expected_b_inv;
     mul(b, expected_b_inv, b_expected_b_inv);
     CHECK(b_expected_b_inv.equals(identity2x2, 1e-7));
@@ -383,7 +388,6 @@ TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
         1, 0.75, -0.75, -1,
     };
 
-    f32smx_t<4, 4> identity4x4 = f32smx_t<4, 4>::identity();
     f32smx_t<4, 4> c_expected_c_inv;
     mul(c, expected_c_inv, c_expected_c_inv);
     CHECK(c_expected_c_inv.equals(identity4x4, 1e-7));
@@ -443,7 +447,6 @@ TEST_CASE("inv_rec smatrix equals", "[inv_rec][smatrix][equals]")
         -8, 9, 3,
     };
 
-    f32smx_t<3, 3> identity3x3 = f32smx_t<3, 3>::identity();
     f32smx_t<3, 3> e_expected_e_inv;
     mul(e, expected_e_inv, e_expected_e_inv);
     CHECK(e_expected_e_inv.equals(identity3x3, 1e-6));

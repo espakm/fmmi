@@ -312,6 +312,13 @@ TEMPLATE_TEST_CASE_SIG("mul_rec dmatrix benchmark", "[mul_rec][dmatrix][benchmar
 
 TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
 {
+    f32dmx_t identity(4, 4);
+    identity.set_identity();
+    const auto& identity1x1 = identity.partition(1, 1);
+    const auto& identity2x2 = identity.partition(2, 2);
+    const auto& identity3x3 = identity.partition(3, 3);
+    const auto& identity4x4 = identity.partition(4, 4);
+
     f32dmx_t a(1, 1, {
         5,
     });
@@ -320,7 +327,6 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
         0.2,
     });
 
-    f32dmx_t identity1x1 = f32dmx_t::identity(1, 1);
     f32dmx_t a_expected_a_inv(1, 1);
     mul(a, expected_a_inv, a_expected_a_inv);
     CHECK(a_expected_a_inv.equals(identity1x1, 0.001));
@@ -349,7 +355,6 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
         1, -2.5,
     });
 
-    f32dmx_t identity2x2 = f32dmx_t::identity(2, 2);
     f32dmx_t b_expected_b_inv(2, 2);
     mul(b, expected_b_inv, b_expected_b_inv);
     CHECK(b_expected_b_inv.equals(identity2x2, 1e-7));
@@ -383,7 +388,6 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
         1, 0.75, -0.75, -1,
     });
 
-    f32dmx_t identity4x4 = f32dmx_t::identity(4, 4);
     f32dmx_t c_expected_c_inv(4, 4);
     mul(c, expected_c_inv, c_expected_c_inv);
     CHECK(c_expected_c_inv.equals(identity4x4, 1e-7));
@@ -443,7 +447,6 @@ TEST_CASE("inv_rec dmatrix equals", "[inv_rec][dmatrix][equals]")
         -8, 9, 3,
     });
 
-    f32dmx_t identity3x3 = f32dmx_t::identity(3, 3);
     f32dmx_t e_expected_e_inv(3, 3);
     mul(e, expected_e_inv, e_expected_e_inv);
     CHECK(e_expected_e_inv.equals(identity3x3, 1e-6));
